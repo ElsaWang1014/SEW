@@ -21,17 +21,20 @@ data = mat["cirs"]
 data_db = 10 * np.log10(np.abs(data))
 cirs_data.append(data_db)
 
-
-#Die erste 1ms
+#Die erste 1000ms
 num_samples = 1000
-data_first_millisecond = data_db[:,0]
+#data_first_millisecond = data_db[:,0]
 
 
 #Correlation
 correlations = []
+cnt = 0
 
 for i in range(1,num_samples):  
-   
+   if cnt ==0:
+      data_first_millisecond = data_db[:,0]
+      cnt =1
+    #data_current_round = data_db[f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"][:,ms]
     data_current_microsecond = data_db[:,i]
 
     normalized = np.sqrt(np.sum(data_first_millisecond**2)*np.sum(data_current_microsecond**2))

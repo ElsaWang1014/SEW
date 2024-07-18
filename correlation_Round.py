@@ -35,18 +35,19 @@ for i in range(1,num_samples):
       data_first_millisecond = data_db[:,0]
       cnt =1
     #data_current_round = data_db[f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"][:,ms]
-    data_current_microsecond = data_db[:,i]
+   
+   data_current_microsecond = data_db[:,i]
 
-    normalized = np.sqrt(np.sum(data_first_millisecond**2)*np.sum(data_current_microsecond**2))
+   normalized = np.sqrt(np.sum(data_first_millisecond**2)*np.sum(data_current_microsecond**2))
 
     #if normalized == 0:
        #correlation = np.correlate(data_first_microsecond,data_current_microsecond,mode='valid')[0]
    # else:
        #correlation = np.correlate(data_first_microsecond,data_current_microsecond,mode='valid')[0]/ normalized
 
-    correlation = np.correlate(data_first_millisecond,data_current_microsecond,mode='valid')/ normalized
+   correlation = np.correlate(data_first_millisecond,data_current_microsecond,mode='valid')/ normalized
 
-    correlations.append(correlation)
+   correlations.append(correlation)
 
 # Figur
 time = np.arange(1,num_samples)

@@ -26,8 +26,11 @@ for round_number in round_numbers:
 for filename in os.listdir(load_path):
    r = int (filename.split("_")[1])
    rounds.append(r)
+<<<<<<< HEAD
    rounds = list(rounds)
    rounds.sort()
+=======
+>>>>>>> origin/neu
 #print(data)
 print(rounds)
 
@@ -58,8 +61,13 @@ for round_number in round_numbers:
     correlation = np.correlate(data_first_round,data_current_round,mode='valid')[0]/ normalized
     correlations.append(correlation)
 
+<<<<<<< HEAD
 #plt.plot(data_first_round)
 #plt.show()
+=======
+plt.plot(data_first_round)
+plt.show()
+>>>>>>> origin/neu
 
 # Figur
 round = np.arange(1,len(round_numbers)+1)

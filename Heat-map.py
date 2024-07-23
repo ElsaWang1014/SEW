@@ -2,12 +2,16 @@
 import numpy as np
 import scipy.io
 import matplotlib.pyplot as plt
+<<<<<<< HEAD
 import correlation_Zeit_Millisecond_fertig
 import correlation_Zeit
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.ticker as ticker
 
 
+=======
+import correlation_Zeit
+>>>>>>> origin/neu
  
 
 # Example data
@@ -58,6 +62,7 @@ def compute_cross_correlation(data):
 # Compute cross-correlation matrix
 
 cross_corr_matrix = compute_cross_correlation(cir_realizations)
+<<<<<<< HEAD
 min_corr = np.min(cross_corr_matrix)
 max_corr = np.max(cross_corr_matrix)
 normalized_matrix = (cross_corr_matrix - min_corr) / (max_corr - min_corr)
@@ -69,12 +74,17 @@ colors = [(0, 0, 1), (1, 0, 0)]  # B -> R
 n_bins = 100  # Discretizes the interpolation into bins
 cmap_name = 'blue_red'
 cm = LinearSegmentedColormap.from_list(cmap_name, colors, N=n_bins)
+=======
+
+ 
+>>>>>>> origin/neu
 
 # Visualize the cross-correlation matrix
 
 fig = plt.figure(figsize=(10, 8))
 ax = fig.add_subplot(111,projection='3d')
 
+<<<<<<< HEAD
 
 #X, Y = np.meshgrid(np.arange(enhanced_matrix.shape[0]), np.arange(enhanced_matrix.shape[1]))
 
@@ -104,5 +114,20 @@ ax.set_ylabel('Round')
 
 ax.set_zlabel('Normalized Cross-Correlation Coefficient')
 ax.set_zlim(0,1)
+=======
+X,Y = np.meshgrid(np.arange(cir_realizations.shape[0]),np.arange(cir_realizations.shape[0]))
+
+surf = ax.plot_surface(X, Y, cross_corr_matrix, cmap='hot')
+#plt.imshow(cross_corr_matrix, cmap='hot', interpolation='nearest')
+
+fig.colorbar(surf, ax=ax, label='Cross-Correlation Coefficient')
+
+plt.title('Cross-Correlation Matrix of CIRs')
+
+ax.set_xlabel('Realization Index')
+ax.set_ylabel('Realization Index')
+ax.set_zlabel('Realization Index')
+ax.set_zlim(0.995,1)
+>>>>>>> origin/neu
 
 plt.show()

@@ -1,4 +1,3 @@
-
 import numpy as np
 import scipy.io
 import matplotlib.pyplot as plt
@@ -13,7 +12,8 @@ from numpy import percentile
 
 # Example data
 
-cir_realizations = correlation_Zeit.correlations # Dict mit round und cirs für alle Sekunden/
+cir_realizations = correlation_Zeit_Millisecond_fertig.correlations 
+print(correlation_Zeit.correlations )  
 print(type(cir_realizations))  
 print(cir_realizations)  
 cir_realizations = np.array(cir_realizations)
@@ -24,10 +24,8 @@ print(cir_realizations.shape)
 
 def compute_cross_correlation(data):
 
-    num_realizations = data.shape[0]
-
+    num_realizations = len(data)
     cross_corr_matrix = np.zeros((num_realizations, num_realizations))
-
  
 
     for i in range(num_realizations):
@@ -37,18 +35,15 @@ def compute_cross_correlation(data):
         for j in range(i, num_realizations):
 
             print(j)
-
-            #flattened_i = data[i].flatten()
-            #flattened_j = data[j].flatten()
-
-            # Compute cross-correlation
-            corr = np.correlate(np.array(data[i], ndmin=1), np.array(data[j], ndmin=1), mode='full')
-            norm_corr = corr / np.sqrt(np.correlate(np.array(data[i], ndmin=1), np.array(data[i], ndmin=1), mode='full')[-1] * np.correlate(np.array(data[j], ndmin=1), np.array(data[j], ndmin=1), mode='full')[-1])
-            max_corr = np.max(norm_corr)
-            
-            cross_corr_matrix[i, j] = max_corr
-
-            cross_corr_matrix[j, i] = max_corr
+            if i == j:
+                corr = 1.0
+            else:
+                corr = np.corrcoef(data, data)[0, 1]
+                for k in range(1, num_realizations - i):
+                    corr += np.corrcoef(data[:-k], data[k:])[0, 1]
+                corr /= num_realizations - i
+            cross_corr_matrix[i, j] = corr
+            cross_corr_matrix[j, i] = corr
 
  
 
@@ -58,26 +53,20 @@ def compute_cross_correlation(data):
 
 # Compute cross-correlation matrix
 # Select every 500th millisecond from cir_realizations
-#cir_realizations_500ms = cir_realizations[::500]
+#cir_realizations_500ms = cir_realizations[::100]
 cross_corr_matrix = compute_cross_correlation(cir_realizations)
-# 使用 z-score 归一化
-cross_corr_matrix = np.nan_to_num(cross_corr_matrix, nan=0.0, posinf=1.0, neginf=-1.0)
-normalized_matrix = stats.zscore(cross_corr_matrix)
 
+
+#min_val = np.min(cross_corr_matrix)
+#max_val = np.max(cross_corr_matrix)
+#normalized_matrix = (cross_corr_matrix - min_val) / (max_val - min_val)
+#print(f"min= {min_val}, max = {max_val}")
 
 # Compute cross-correlation matrix
 #cross_corr_matrix = compute_cross_correlation(cir_realizations_500ms)
 
-#min_corr = np.min(cross_corr_matrix)
-#max_corr = np.max(cross_corr_matrix)
-#normalized = np.sqrt((min_corr**2)*(max_corr**2))
-#normalized_matrix = (cross_corr_matrix - min_corr) / (max_corr - min_corr)
-#normalized_matrix = cross_corr_matrix  / normalized
-#rank_matrix = cross_corr_matrix.argsort(axis=1).argsort(axis=1)
-#normalized_matrix = rank_matrix / (cross_corr_matrix.shape[1] - 1)
-# 验证归一化矩阵的形状和数值
-print("Normalized matrix shape:", normalized_matrix.shape)
-print("Normalized matrix min and max values:", np.min(normalized_matrix), np.max(normalized_matrix))
+print("cross_corr_matrix:", cross_corr_matrix)
+#print("Normalized matrix min and max values:", np.min(normalized_matrix), np.max(normalized_matrix))
 
 
 colors = [(0, 0, 1), (1, 0, 0)]  # B -> R
@@ -91,8 +80,8 @@ fig = plt.figure(figsize=(10, 8))
 ax = fig.add_subplot(111,projection='3d')
 
 
-X, Y = np.meshgrid(np.arange(normalized_matrix.shape[0]), np.arange(normalized_matrix.shape[1]))
-surf = ax.plot_surface(X, Y, normalized_matrix, cmap=cm)
+X, Y = np.meshgrid(np.arange(cross_corr_matrix.shape[0]), np.arange(cross_corr_matrix.shape[1]))
+surf = ax.plot_surface(X, Y, cross_corr_matrix, cmap=cm)
 #plt.imshow(cross_corr_matrix, cmap='hot', interpolation='nearest')
 
 fig.colorbar(surf, ax=ax, label='Normalized Cross-Correlation Coefficient')

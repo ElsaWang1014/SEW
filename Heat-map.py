@@ -57,10 +57,6 @@ def compute_cross_correlation(data):
 cross_corr_matrix = compute_cross_correlation(cir_realizations)
 
 
-#min_val = np.min(cross_corr_matrix)
-#max_val = np.max(cross_corr_matrix)
-#normalized_matrix = (cross_corr_matrix - min_val) / (max_val - min_val)
-#print(f"min= {min_val}, max = {max_val}")
 
 # Compute cross-correlation matrix
 #cross_corr_matrix = compute_cross_correlation(cir_realizations_500ms)

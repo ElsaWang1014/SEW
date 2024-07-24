@@ -54,7 +54,7 @@ for round_number in round_numbers:
     #else:
        #correlation = np.correlate(data_first_microsecond,data_current_microsecond,mode='valid')[0]/ normalized
 
-    #print(len(data_first_round))
+    
     correlation = np.correlate(data_first_round,data_current_round,mode='valid')[0]/ normalized
     correlations.append(correlation)
 

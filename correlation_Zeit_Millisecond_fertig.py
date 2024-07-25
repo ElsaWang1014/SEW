@@ -31,6 +31,7 @@ for i in range(data_db.shape[1] - 1):
     normalized = np.sqrt(np.sum(data_first_millisecond ** 2) * np.sum(data_current_microsecond ** 2))
     correlation = np.correlate(data_first_millisecond, data_current_microsecond, mode='valid')[0] / normalized
     correlations.append(correlation)
+    print(f"Correlation im jeden Millisecond",data_db,correlations)
 
 # Figur
 plt.figure(figsize=(20, 6))

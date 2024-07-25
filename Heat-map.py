@@ -46,7 +46,6 @@ def compute_cross_correlation(data):
             cross_corr_matrix[j, i] = corr
 
  
-
     return cross_corr_matrix
 
  

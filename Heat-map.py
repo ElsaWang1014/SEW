@@ -40,7 +40,7 @@ def compute_cross_correlation(data):
             else:
                 corr = np.corrcoef(data, data)[0, 1]
                 for k in range(1, num_realizations - i):
-                    corr += np.corrcoef(data[:-k], data[k:])[0, 1]
+                 corr += np.corrcoef(data[:-k], data[k:])[0, 1]
                 corr /= num_realizations - i
             cross_corr_matrix[i, j] = corr
             cross_corr_matrix[j, i] = corr

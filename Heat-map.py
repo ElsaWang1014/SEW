@@ -55,8 +55,6 @@ def compute_cross_correlation(data):
 #cir_realizations_500ms = cir_realizations[::100]
 cross_corr_matrix = compute_cross_correlation(cir_realizations)
 
-
-
 # Compute cross-correlation matrix
 #cross_corr_matrix = compute_cross_correlation(cir_realizations_500ms)
 

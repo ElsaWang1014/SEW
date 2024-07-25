@@ -48,7 +48,7 @@ def compute_cross_correlation(data):
  
     return cross_corr_matrix
 
- 
+
 
 # Compute cross-correlation matrix
 # Select every 500th millisecond from cir_realizations

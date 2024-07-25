@@ -30,7 +30,12 @@ for filename in os.listdir(load_path):
    rounds = list(rounds)
    rounds.sort()
 =======
+<<<<<<< HEAD
+   rounds = list(rounds)
+   rounds.sort()
+=======
 >>>>>>> origin/neu
+>>>>>>> f24c6cc052b0cd7233956b3a27714149a1c81c4d
 #print(data)
 print(rounds)
 
@@ -57,6 +62,14 @@ for round_number in round_numbers:
     #else:
        #correlation = np.correlate(data_first_microsecond,data_current_microsecond,mode='valid')[0]/ normalized
 
+<<<<<<< HEAD
+    
+    correlation = np.correlate(data_first_round,data_current_round,mode='valid')[0]/ normalized
+    correlations.append(correlation)
+
+#plt.plot(data_first_round)
+#plt.show()
+=======
     #print(len(data_first_round))
     correlation = np.correlate(data_first_round,data_current_round,mode='valid')[0]/ normalized
     correlations.append(correlation)
@@ -68,6 +81,7 @@ for round_number in round_numbers:
 plt.plot(data_first_round)
 plt.show()
 >>>>>>> origin/neu
+>>>>>>> f24c6cc052b0cd7233956b3a27714149a1c81c4d
 
 # Figur
 round = np.arange(1,len(round_numbers)+1)

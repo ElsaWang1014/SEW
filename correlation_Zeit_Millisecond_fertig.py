@@ -5,7 +5,7 @@ import os
 
 # Informationen
 load_path = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_AGVHorizontal/"
-round_numbers = [77, 78, 79, 80,81,82]
+round_numbers = [77]
 second = 2
 
 # die Daten für bestimmte Round und Zeit herunterladen
@@ -31,7 +31,7 @@ for i in range(data_db.shape[1] - 1):
     normalized = np.sqrt(np.sum(data_first_millisecond ** 2) * np.sum(data_current_microsecond ** 2))
     correlation = np.correlate(data_first_millisecond, data_current_microsecond, mode='valid')[0] / normalized
     correlations.append(correlation)
-    print(f"Correlation im jeden Millisecond",data_db,correlations)
+    #print(f"Correlation im jeden Millisecond",data_db,correlations)
 
 # Figur
 plt.figure(figsize=(20, 6))

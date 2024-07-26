@@ -27,9 +27,7 @@ for filenames in os.listdir(load_path_1):
 
 
 #die Daten für bestimmte Round und Zeit herunterladen
-#filename = load_path_1.format(round_number,second)
-#mat = scipy.io.loadmat(filenames)
-#data = mat["cirs"]
+
 for second in seconds:
    
  filename = f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"
@@ -46,21 +44,10 @@ for second in seconds:
 # dB berechnen
 for key, value in data.items():
  data_db [key]= 10 * np.log10(np.abs(value))
-#cirs_data.append(data_db)
-# durch jede Millisecond
-#for ms in range(cirs_data.shape[1]): 
-        #data_db[(second,ms)] = 10 * np.log10(np.abs(cirs_data[:, ms]))
-       #for key, value in data.items():
-       # data_db[key] = 10 * np.log10(np.abs(value))
-        #print (f"data_db ist: {data_db}")
-        #print (f"Zahle ist {len(data_db)}")
+
 
 #Die erste 1ms
-#num_samples = 1000
-#data_first_millisecond = data_db[:,0]
-#data_first_millisecond = data_db[0][:, 0]
-#first_millisecond_key = (second[0],0)
-#data_first_millisecond = data_db[first_millisecond_key]
+
 first_second_filename = f"Round_{round_number}_AP_1_RF_0_Sec_{seconds[0]}.mat"
 data_first_millisecond = data_db[first_second_filename][:, 0]
 
@@ -68,10 +55,7 @@ data_first_millisecond = data_db[first_second_filename][:, 0]
 correlations = []
 ms = 0
 for second in seconds:
-#for key in data_db.keys():  
-    #if key != first_millisecond_key:
-    #data_first_millisecond = data_db[f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"][:,ms]
-      #data_current_millisecond = data_db[f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"][:,ms]
+
     data_current_millisecond = data_db[f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"][:, ms]
      
     normalized = np.sqrt(np.sum(data_first_millisecond**2)*np.sum(data_current_millisecond**2))
@@ -90,7 +74,7 @@ for second in seconds:
 #plt.plot(data_first_millisecond)
 #plt.show()
 time = np.arange(1,len(data_db)+1)
-xticks = np.arange(1,25,0.5)
+xticks = np.arange(1,25)
 yticks = np.arange(0.994,1,0.001)
 plt.figure(figsize=(100, 50))
 plt.plot(time, correlations,color='b')

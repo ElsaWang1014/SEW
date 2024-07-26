@@ -5,7 +5,7 @@ import os
 
 # Informationen
 load_path = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_AGVHorizontal/"
-round_numbers = [77]
+round_numbers = [77,78,79,80]
 second = 2
 
 # die Daten für bestimmte Round und Zeit herunterladen
@@ -34,7 +34,7 @@ for i in range(data_db.shape[1] - 1):
     #print(f"Correlation im jeden Millisecond",data_db,correlations)
 
 # Figur
-plt.figure(figsize=(20, 6))
+plt.figure(figsize=(20, 10))
 plt.plot(range(1, len(correlations) + 1), correlations, color='b')
 plt.xlabel("Rounds")
 plt.ylabel("Correlation Coefficient")

@@ -5,9 +5,9 @@ import os
 
 #Inforamtionen
 load_path = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_AGVHorizontal/"
-rounds = []
+rounds = set()
 round_numbers = [77,78,79,80,81,82]
-second = 1
+second = 2
 data = {}
 data_db = {}
 
@@ -25,9 +25,9 @@ for round_number in round_numbers:
 #wie viele Rounds in diesem Ordner
 for filename in os.listdir(load_path):
    r = int (filename.split("_")[1])
-   rounds.append(r)
-   rounds = list(rounds)
-   rounds.sort()
+   rounds.add(r)
+rounds = list(rounds)
+rounds.sort()
 #print(data)
 print(rounds)
 
@@ -58,8 +58,8 @@ for round_number in round_numbers:
     correlation = np.correlate(data_first_round,data_current_round,mode='valid')[0]/ normalized
     correlations.append(correlation)
 
-plt.plot(data_first_round)
-plt.show()
+#plt.plot(data_first_round)
+#plt.show()
 
 # Figur
 round = np.arange(1,len(round_numbers)+1)

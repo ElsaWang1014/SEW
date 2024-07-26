@@ -12,10 +12,10 @@ from numpy import percentile, zeros
 
 # Example data
 
-cir_realizations = [np.array([value]) for value in correlation_Zeit_Millisecond_fertig.correlations]
+cir_realizations = [np.array([value]) for value in correlation_Zeit.correlations]
 
 def ensure_array(data):
-    #jede Data als 1-dimensional
+    """Stelle sicher, dass jeder Eintrag in der Liste ein eindimensionales numpy Array ist"""
     return [np.asarray(item).flatten() for item in data]
 
 def standardize(data):
@@ -43,7 +43,6 @@ def compute_cross_correlation(data):
 
             print(f"Comparing with realization {j}")
             
-            # make sure 1-dimensional
             corr = np.correlate(data[i], data[j], mode='full')
             print(f"correlation", corr)
 
@@ -60,34 +59,18 @@ def compute_cross_correlation(data):
 
     print("Shape of data[i]:", data[i].shape)
     print("Shape of data[j]:", data[j].shape)
+    
 
 
     return cross_corr_matrix
-
+ 
  
 
 cir_realizations = ensure_array(cir_realizations)
 
-# 检查数据长度和内容
-print("Checking data lengths and contents:")
-for i, realization in enumerate(cir_realizations):
-    print(f"Realization {i}: {realization}")
-    print(f"Length of Realization {i}: {len(realization)}")
 
-# 标准化
-# 只有在数据长度足够大的情况下才执行标准化
-if any(len(realization) > 1 for realization in cir_realizations):
-    cir_realizations_nor = [standardize(realization) for realization in cir_realizations]
-else:
-    cir_realizations_nor = cir_realizations
-
-print("Standardized cir_realizations:")
-for i, realization in enumerate(cir_realizations_nor):
-    print(f"Realization {i}: {realization}")
-    print(f"Shape of Realization {i}: {realization.shape}")
-
-# 计算交叉相关性矩阵
-cross_corr_matrix = compute_cross_correlation(cir_realizations_nor)
+# cross correlation matrix
+cross_corr_matrix = compute_cross_correlation(cir_realizations)
 print("cross_corr_matrix:", cross_corr_matrix)
 
 
@@ -97,36 +80,39 @@ print("cross_corr_matrix:", cross_corr_matrix)
 fig = plt.figure(figsize=(8,6))
 ax = plt.subplot(111, projection='3d')
 
-# 创建网格
+# grid
 X, Y = np.meshgrid(np.arange(cross_corr_matrix.shape[0]), np.arange(cross_corr_matrix.shape[1]))
 
-# 绘制表面图
-colors = [(0, 0, 1), (1, 0, 0)]  # 从蓝色到红色
-n_bins = 100  # 将插值离散化为100个色阶
+# colorbar
+colors = [(0, 0, 1), (1, 0, 0)]  # blue to red
 cmap_name = 'blue_red'
-cm = LinearSegmentedColormap.from_list(cmap_name, colors, N=n_bins)
+cm = LinearSegmentedColormap.from_list(cmap_name, colors)
 
-surf = ax.plot_surface(X=X, Y=Y, Z=cross_corr_matrix, cmap=cm)
+surf = ax.plot_surface(X=X, Y=Y, Z=cross_corr_matrix, cmap=cm,vmin=0, vmax=1)
+cbar = fig.colorbar(surf, ax=ax)
+cbar.set_clim(0, 1)
 
-# 添加颜色条
-fig.colorbar(surf, ax=ax, label='Normalized Cross-Correlation Coefficient')
+fig.colorbar(surf, ax=ax, label='Cross-Correlation Coefficient')
 
-# 设置标题和标签
-plt.title('Cross-Correlation Matrix of CIRs')
+# title and ticks and label
+plt.title('3D Heat-Map for Cross-Correlation Matrix of CIRs')
 
-#ax.set_xticks(np.arange(len(correlation_Zeit.rounds)))
-#ax.set_yticks(np.arange(len(correlation_Zeit.rounds)))
-#ax.set_xticklabels(correlation_Zeit.rounds)
-#ax.set_yticklabels(correlation_Zeit.rounds)
 
-# set the major ticks to every 50th label
-#ax.xaxis.set_major_locator(ticker.MultipleLocator(50))
-#ax.yaxis.set_major_locator(ticker.MultipleLocator(50))
+x_ticks = range(len(correlation_Zeit.rounds))
+x_tick_labels = correlation_Zeit.rounds
+y_ticks = range(len(correlation_Zeit.rounds))
+y_tick_labels = correlation_Zeit.rounds
+ax.set_xticks(x_ticks)
+ax.set_yticks(y_ticks)
+ax.set_xticklabels(x_tick_labels)
+ax.set_yticklabels(y_tick_labels)
+
+
 ax.invert_xaxis()
-ax.set_xlabel('Millisecond')
-ax.set_ylabel('Millisecond')
+ax.set_xlabel('Rounds')
+ax.set_ylabel('Rounds')
 
-ax.set_zlabel('Normalized Cross-Correlation Coefficient')
+ax.set_zlabel('Cross-Correlation Coefficient')
 ax.set_zlim(0.99,1)
 
 plt.show()

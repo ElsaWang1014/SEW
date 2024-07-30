@@ -13,12 +13,18 @@ data_db = []
 for round_number in round_numbers:
     filename = f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"
     full_filename = os.path.join(load_path, filename)
-    mat = scipy.io.loadmat(full_filename)
-    cirs_data = mat["cirs"]
-    data_db.append(10 * np.log10(np.abs(cirs_data)))
+    if os.path.exists(full_filename):
+      mat = scipy.io.loadmat(full_filename)
+      cirs_data = mat["cirs"]
+      data_db.append(10 * np.log10(np.abs(cirs_data)))
+    else:
+       print(f"File {filename} not found.")
 
 # concatenate data
-data_db = np.concatenate(data_db, axis=1)
+if not data_db:
+   print("No data found.")
+else:
+   data_db = np.concatenate(data_db, axis=1)
 
 # Correlation
 correlations = []

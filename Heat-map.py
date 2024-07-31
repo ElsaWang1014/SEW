@@ -1,77 +1,71 @@
 import numpy as np
 import scipy.io
 import matplotlib.pyplot as plt
-import correlation_Zeit_Millisecond_fertig
-import correlation_Zeit
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.ticker as ticker
 from scipy import stats
 from numpy import percentile, zeros
-
- 
-
-# Example data
-
-cir_realizations = [np.array([value]) for value in correlation_Zeit.correlations]
-
-def ensure_array(data):
-    """Stelle sicher, dass jeder Eintrag in der Liste ein eindimensionales numpy Array ist"""
-    return [np.asarray(item).flatten() for item in data]
-
-def standardize(data):
-    # Standardisieren correlation, weil die differenz zu klein ist
-    data = np.asarray(data)
-    mean = np.mean(data)
-    std = np.std(data)
-    if std == 0:
-        return np.zeros_like(data) 
-    return (data - mean) / std
+import os
 
 
-def compute_cross_correlation(data):
 
-    num_realizations = len(data)
-    cross_corr_matrix = np.zeros((num_realizations, num_realizations))
-
- 
-
-    for i in range(num_realizations):
-
-        print(f"Processing realization {i}")
-        
-        for j in range(i, num_realizations):
-
-            print(f"Comparing with realization {j}")
-            
-            corr = np.correlate(data[i], data[j], mode='full')
-            print(f"correlation", corr)
-
-            #norm_corr = corr / np.sqrt(np.correlate(data[i], data[i], mode='full')[len(data[i]) - 1] * np.correlate(data[j], data[j], mode='full')[len(data[j]) - 1])
-            #print(f"nor_correlation", norm_corr)
+#Inforamtionen
+load_path = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_AGVHorizontal/"
+rounds = set()
+round_numbers = [77,78,79,80,81,82]
+second = 2
+data = {}
+data_db = {}
 
 
-            max_corr = np.max(corr)
+#die Daten für bestimmte Round und Zeit herunterladen
+for round_number in round_numbers:
+   
+ filename = f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"
+ full_filename = os.path.join(load_path,filename)
+ mat = scipy.io.loadmat(full_filename)
+ cirs_data = mat["cirs"]
+ data[filename] = cirs_data
+ #print(f"Attempting to load file: {full_filename}")
 
-            cross_corr_matrix[i, j] = max_corr
+#wie viele Rounds in diesem Ordner
+for filename in os.listdir(load_path):
+   r = int (filename.split("_")[1])
+   rounds.add(r)
+rounds = list(rounds)
+rounds.sort()
+print(data)
+print(rounds)
 
-            cross_corr_matrix[j, i] = max_corr
-
-
-    print("Shape of data[i]:", data[i].shape)
-    print("Shape of data[j]:", data[j].shape)
+# dB berechnen
+for key, value in data.items():
+    data_db[key] = 10 * np.log10(np.abs(value))
     
 
+data_array = np.array(list(data_db.values()))
+print(f'data_db',data_array)
 
-    return cross_corr_matrix
- 
- 
-
-cir_realizations = ensure_array(cir_realizations)
+num_realizations = len(data_array)
+corr = np.zeros((num_realizations, num_realizations))
 
 
-# cross correlation matrix
-cross_corr_matrix = compute_cross_correlation(cir_realizations)
-print("cross_corr_matrix:", cross_corr_matrix)
+# 计算交叉相关矩阵
+for i in range(num_realizations):
+    for j in range(num_realizations):
+        data_i = data_array[i]
+        data_j = data_array[j]
+
+        corr_coef = np.corrcoef(data_i, data_j)
+        print(f'corr_coef',corr_coef)
+        if i == j:
+            corr[i,j] = corr_coef[0, 0]  # calculate correlation with itself
+            print(f'corr coef with itself',corr)
+        else:
+           corr[i, j] = corr_coef[0, 1]
+           corr[j, i] = corr_coef[1, 0]
+    print (f'corr matrix', corr)
+    
+        
 
 
 # Visualisierung
@@ -81,16 +75,16 @@ fig = plt.figure(figsize=(8,6))
 ax = plt.subplot(111, projection='3d')
 
 # grid
-X, Y = np.meshgrid(np.arange(cross_corr_matrix.shape[0]), np.arange(cross_corr_matrix.shape[1]))
-
+X, Y = np.meshgrid(range(num_realizations), range(num_realizations))
+Z = corr
 # colorbar
 colors = [(0, 0, 1), (1, 0, 0)]  # blue to red
 cmap_name = 'blue_red'
 cm = LinearSegmentedColormap.from_list(cmap_name, colors)
 
-surf = ax.plot_surface(X=X, Y=Y, Z=cross_corr_matrix, cmap=cm,vmin=0, vmax=1)
-cbar = fig.colorbar(surf, ax=ax)
-cbar.set_clim(0, 1)
+surf = ax.plot_surface(X, Y, Z, cmap=cm,vmin=0, vmax=1)
+#cbar = fig.colorbar(surf, ax=ax)
+#cbar.set_clim(0, 1)
 
 fig.colorbar(surf, ax=ax, label='Cross-Correlation Coefficient')
 
@@ -98,10 +92,10 @@ fig.colorbar(surf, ax=ax, label='Cross-Correlation Coefficient')
 plt.title('3D Heat-Map for Cross-Correlation Matrix of CIRs')
 
 
-x_ticks = range(len(correlation_Zeit.rounds))
-x_tick_labels = correlation_Zeit.rounds
-y_ticks = range(len(correlation_Zeit.rounds))
-y_tick_labels = correlation_Zeit.rounds
+x_ticks = range(len(rounds))
+x_tick_labels = rounds
+y_ticks = range(len(rounds))
+y_tick_labels = rounds
 ax.set_xticks(x_ticks)
 ax.set_yticks(y_ticks)
 ax.set_xticklabels(x_tick_labels)
@@ -113,6 +107,6 @@ ax.set_xlabel('Rounds')
 ax.set_ylabel('Rounds')
 
 ax.set_zlabel('Cross-Correlation Coefficient')
-ax.set_zlim(0.99,1)
+ax.set_zlim(0,1)
 
 plt.show()

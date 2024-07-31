@@ -58,31 +58,28 @@ for second in seconds:
 
     data_current_millisecond = data_db[f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"][:, ms]
      
-    normalized = np.sqrt(np.sum(data_first_millisecond**2)*np.sum(data_current_millisecond**2))
+    
+    correlation = np.corrcoef(data_first_millisecond,data_current_millisecond)
+    #print(correlation[0][1])
+    correlations.append(correlation[0][1])
 
-    #if normalized == 0:
-       #correlation = np.correlate(data_first_microsecond,data_current_microsecond,mode='valid')[0]
-   # else:
-       #correlation = np.correlate(data_first_microsecond,data_current_microsecond,mode='valid')[0]/ normalized
-
-    correlation = np.correlate(data_first_millisecond,data_current_millisecond,mode='valid')[0]/ normalized
-
-    correlations.append(correlation)
+    #correlations.append(correlation)
     print(f"correlations ist:{correlations}")
 
 # Figur
 #plt.plot(data_first_millisecond)
 #plt.show()
 time = np.arange(1,len(data_db)+1)
-xticks = np.arange(1,25)
-yticks = np.arange(0.994,1,0.001)
+max_seconds = max(seconds)
+xticks = np.arange(1,max_seconds)
+yticks = np.arange(0,1,0.1)
 plt.figure(figsize=(100, 50))
 plt.plot(time, correlations,color='b')
 plt.xlabel("Seconds [s]")
-plt.xlim(1,25)
+plt.xlim(1,max_seconds)
 plt.xticks(xticks)
 plt.ylabel("Correlation Coefficient")
-#plt.ylim(0.994,1.001)
+#plt.ylim(0,1)
 #plt.yticks(yticks)
 plt.title(f"Correlation of 1st Millisecond with Sebsequent Milliseconds in Round {round_number}")
 plt.grid(True)

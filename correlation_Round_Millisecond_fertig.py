@@ -45,7 +45,7 @@ for second in seconds:
  #data[filename] = cirs_data
  print(filename)
  #print(data)
-print(f"Available keys in data_db:", data_db.keys())
+
 
 
 #Die erste 1ms
@@ -58,34 +58,38 @@ data_first_millisecond = data_db[first_millisecond_key]
 correlations = []
 
 for key in data_db.keys():  
-   
+    #print(key)
     data_current_millisecond = data_db[key]
      
-    normalized = np.sqrt(np.sum(data_first_millisecond**2)*np.sum(data_current_millisecond**2))
-
-    #if normalized == 0:
-       #correlation = np.correlate(data_first_microsecond,data_current_microsecond,mode='valid')[0]
-   # else:
-       #correlation = np.correlate(data_first_microsecond,data_current_microsecond,mode='valid')[0]/ normalized
-
-    correlation = np.correlate(data_first_millisecond,data_current_millisecond,mode='valid')[0]/ normalized
-
-    correlations.append(correlation)
+    
+    correlation = np.corrcoef(data_first_millisecond,data_current_millisecond)
+    #print(correlation[0][1])
+    correlations.append(correlation[0][1])
     #print(f"correlations ist:{correlations}")
+    #break
+
 
 # Figur
 
-time = np.arange(1,len(data_db)+1)
-xticks = np.arange(1,25)
-yticks = np.arange(0.999,1,0.0001)
-plt.figure(figsize=(100, 55))
-plt.plot(time, correlations,color='b')
-plt.xlabel("Seconds [s]")
-plt.xlim(1,25)
-plt.xticks(xticks)
+
+#plt.plot(data_first_millisecond)
+#plt.plot(data_db[(24,500)])
+#plt.show()
+
+
+xticks = [i * 1000 for i in range(len(seconds) + 1)]
+
+x_tick_labels = [f"{second}s" for second in [seconds[0]] + seconds]
+
+plt.plot(range(1, len(correlations) + 1), correlations,color='b')
+plt.xlabel("seconds")
+plt.xticks(ticks=xticks,labels=x_tick_labels)        
+#plt.xlim(1,len(correlations))                                                                                                     
 plt.ylabel("Correlation Coefficient")
-plt.ylim(0.999,1.0001)
-plt.yticks(yticks)
+#plt.ylim(0.999,1.0001)
+#plt.yticks(yticks)
 plt.title(f"Correlation of 1st Millisecond with Sebsequent Milliseconds in Round {round_number}")
 plt.grid(True)
 plt.show()
+
+

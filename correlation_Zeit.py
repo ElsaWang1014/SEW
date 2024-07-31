@@ -47,16 +47,13 @@ for round_number in round_numbers:
       cnt =1
     data_current_round = data_db[f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"][:,ms]
 
-    normalized = np.sqrt(np.sum(data_first_round**2)*np.sum(data_current_round**2))
-
-    #if normalized == 0:
-      # correlation = np.correlate(data_first_microsecond,data_current_microsecond,mode='valid')[0]
-    #else:
-       #correlation = np.correlate(data_first_microsecond,data_current_microsecond,mode='valid')[0]/ normalized
-
-    #print(len(data_first_round))
-    correlation = np.correlate(data_first_round,data_current_round,mode='valid')[0]/ normalized
-    correlations.append(correlation)
+  
+    correlation = np.corrcoef(data_first_round,data_current_round)
+    #correlations.append(correlation)
+    correlations.append(correlation[0][1])
+    #correlations.append(correlation)
+    print(round_number,correlations)
+    print(round_number,correlation)
 
 #plt.plot(data_first_round)
 #plt.show()
@@ -70,6 +67,6 @@ plt.xticks(rounds)
 #plt.yticks(fontname = 'Arial')
 plt.ylabel("Correlation Coefficient")
 #plt.ylim([0,1])
-plt.title(f"Correlation of 1st Round with Sebsequent Rounds in Second {second}")
+plt.title(f"Correlation of 1st Round with Rounds in Second {second}")
 plt.grid(True)
 plt.show()

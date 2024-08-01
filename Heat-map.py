@@ -6,7 +6,7 @@ import matplotlib.ticker as ticker
 from scipy import stats
 from numpy import percentile, zeros
 import os
-
+from scipy.interpolate import griddata
 
 
 #Inforamtionen
@@ -45,68 +45,63 @@ for key, value in data.items():
 data_array = np.array(list(data_db.values()))
 print(f'data_db',data_array)
 
-num_realizations = len(data_array)
-corr = np.zeros((num_realizations, num_realizations))
+num_milliseconds = data_array.shape[2]
+
+corr = np.zeros((len(round_numbers), len(round_numbers), num_milliseconds))
 
 
-# 计算交叉相关矩阵
-for i in range(num_realizations):
-    for j in range(num_realizations):
-        data_i = data_array[i]
-        data_j = data_array[j]
+# cross correlation berechnen
+for t in range(num_milliseconds):
+    #print (f'Millisecond:', t)
+    for i in range(len(round_numbers)):
+        #print(f'Round number:', round_number)
+        for j in range(i, len(round_numbers)):
+          #print(f'Round number:', round_number)
+          data_i = data_array[i, :, t]
+          data_j = data_array[j, :, t]
 
-        corr_coef = np.corrcoef(data_i, data_j)
-        print(f'corr_coef',corr_coef)
-        if i == j:
-            corr[i,j] = corr_coef[0, 0]  # calculate correlation with itself
-            print(f'corr coef with itself',corr)
-        else:
-           corr[i, j] = corr_coef[0, 1]
-           corr[j, i] = corr_coef[1, 0]
-    print (f'corr matrix', corr)
+          corr_coef = np.corrcoef(data_i, data_j)
+          #print(f'corr_coef',corr_coef)
+          if i == j:
+                corr[i, j, t] = corr_coef[0, 0]  # calculate correlation with itself
+          else:
+                corr[i, j, t] = corr_coef[0, 1]
+                corr[j, i, t] = corr_coef[1, 0]
+
+    #print (f'corr matrix', corr)
     
         
 
 
 # Visualisierung
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
 
-# Create figure and add axis
-fig = plt.figure(figsize=(8,6))
-ax = plt.subplot(111, projection='3d')
-
-# grid
-X, Y = np.meshgrid(range(num_realizations), range(num_realizations))
-Z = corr
 # colorbar
 colors = [(0, 0, 1), (1, 0, 0)]  # blue to red
 cmap_name = 'blue_red'
 cm = LinearSegmentedColormap.from_list(cmap_name, colors)
 
-surf = ax.plot_surface(X, Y, Z, cmap=cm,vmin=0, vmax=1)
-#cbar = fig.colorbar(surf, ax=ax)
-#cbar.set_clim(0, 1)
 
-fig.colorbar(surf, ax=ax, label='Cross-Correlation Coefficient')
-
-# title and ticks and label
-plt.title('3D Heat-Map for Cross-Correlation Matrix of CIRs')
-
-
-x_ticks = range(len(rounds))
-x_tick_labels = rounds
-y_ticks = range(len(rounds))
-y_tick_labels = rounds
-ax.set_xticks(x_ticks)
-ax.set_yticks(y_ticks)
-ax.set_xticklabels(x_tick_labels)
-ax.set_yticklabels(y_tick_labels)
+# grid
+X, Y = np.meshgrid(round_numbers, round_numbers)
+for t in range(num_milliseconds):
+    Z = np.full_like(X, t)  
+    corr_t = corr[:, :, t]
+    surf=ax.plot_surface(X, Y, Z, facecolors=cm(corr_t),vmin=0,vmax=1)
 
 
+mappable = plt.cm.ScalarMappable(cmap=cm, norm=plt.Normalize(vmin=0, vmax=1))
+cbar = plt.colorbar(mappable, ax=ax)
+cbar.set_label('Cross-Correlation Coefficient', labelpad=10)
+
+
+ax.set_title('4D Heatmap of Cross-Correlation Matrix of CIRs')
+ax.set_xlabel('Round')
+ax.set_ylabel('Round')
+ax.set_zlabel('Milliseconds')
 ax.invert_xaxis()
-ax.set_xlabel('Rounds')
-ax.set_ylabel('Rounds')
 
-ax.set_zlabel('Cross-Correlation Coefficient')
-ax.set_zlim(0,1)
+
 
 plt.show()

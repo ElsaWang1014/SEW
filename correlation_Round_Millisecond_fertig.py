@@ -81,9 +81,9 @@ xticks = [i * 1000 for i in range(len(seconds) + 1)]
 
 x_tick_labels = [f"{second}s" for second in [seconds[0]] + seconds]
 
-plt.plot(range(1, len(correlations) + 1), correlations,color='b')
+plt.plot(np.arange(0,25,0.001) , correlations,color='b')
 plt.xlabel("seconds")
-plt.xticks(ticks=xticks,labels=x_tick_labels)        
+#plt.xticks(ticks=xticks,labels=x_tick_labels)        
 #plt.xlim(1,len(correlations))                                                                                                     
 plt.ylabel("Correlation Coefficient")
 #plt.ylim(0.999,1.0001)

@@ -38,7 +38,7 @@ for i in range(data_db.shape[1] - 1):
     correlation = np.corrcoef(data_first_millisecond,data_current_millisecond)
     
     correlations.append(correlation[0][1])
-    print(f"Correlation im jeden Millisecond",data_db,correlations)
+    #print(f"Correlation im jeden Millisecond",data_db,correlations)
 
 # Figur
 plt.figure(figsize=(20, 10))

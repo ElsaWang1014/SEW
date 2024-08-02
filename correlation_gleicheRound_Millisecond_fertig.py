@@ -18,12 +18,15 @@ for filenames in os.listdir(load_path_1):
     if filenames.startswith(f"Round_{round_number}_AP_1_RF_0_Sec_") and filenames.endswith(".mat"):
        r = int (filenames.split("_")[7].replace(".mat",""))
        seconds.append(r)
-
+       
        #ordnen wie 1,2,3,...
        seconds.sort()
-       print (f"second ist {seconds}")
 
-#print(seconds)
+    
+       print (f"second ist {seconds}")
+       print(f"filename is：{filenames}")
+       print(f"repr filename： {repr(filenames)}")
+
 
 
 #die Daten für bestimmte Round und Zeit herunterladen
@@ -32,55 +35,58 @@ for second in seconds:
    
  filename = f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"
  full_filename = os.path.join(load_path_1,filename)
- mat = scipy.io.loadmat(full_filename)
- cirs_data = mat["cirs"]
- 
- data[filename] = cirs_data
- #print(filename)
+ if os.path.exists(full_filename):
+        mat = scipy.io.loadmat(full_filename)
+        cirs_data = mat["cirs"]
+        
+        # Durch jede Millisecond dB berechnen
+        for ms in range(cirs_data.shape[1]):
+            data_db[(second, ms)] = 10 * np.log10(np.abs(cirs_data[:, ms]))
+ #data[filename] = cirs_data
+ print(filename)
  #print(data)
 
 
 
-# dB berechnen
-for key, value in data.items():
- data_db [key]= 10 * np.log10(np.abs(value))
-
-
 #Die erste 1ms
-
 first_second_filename = f"Round_{round_number}_AP_1_RF_0_Sec_{seconds[0]}.mat"
-data_first_millisecond = data_db[first_second_filename][:, 0]
+first_millisecond_key = (seconds[0], 0)
+data_first_millisecond = data_db[first_millisecond_key]
+
 
 #Correlation
 correlations = []
-ms = 0
-for second in seconds:
 
-    data_current_millisecond = data_db[f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"][:, ms]
+for key in data_db.keys():  
+    #print(key)
+    data_current_millisecond = data_db[key]
      
     
     correlation = np.corrcoef(data_first_millisecond,data_current_millisecond)
     #print(correlation[0][1])
     correlations.append(correlation[0][1])
+    #print(f"correlations ist:{correlations}")
+    #break
 
-    #correlations.append(correlation)
-    print(f"correlations ist:{correlations}")
 
 # Figur
+
 #plt.plot(data_first_millisecond)
+#plt.plot(data_db[(24,500)])
 #plt.show()
-time = np.arange(1,len(data_db)+1)
-max_seconds = max(seconds)
-xticks = np.arange(1,max_seconds)
-yticks = np.arange(0,1,0.1)
-plt.figure(figsize=(100, 50))
-plt.plot(time, correlations,color='b')
-plt.xlabel("Seconds [s]")
-plt.xlim(1,max_seconds)
-plt.xticks(xticks)
+
+#xticks = [i * 1000 for i in range(len(seconds) + 1)]
+#x_tick_labels = [f"{second}s" for second in [seconds[0]] + seconds]
+
+plt.plot(np.arange(0,len(seconds),0.001) , correlations,color='b')
+plt.xlabel("seconds")
+#plt.xticks(ticks=xticks,labels=x_tick_labels)        
+#plt.xlim(1,len(correlations))                                                                                                     
 plt.ylabel("Correlation Coefficient")
-#plt.ylim(0,1)
+#plt.ylim(0.999,1.0001)
 #plt.yticks(yticks)
 plt.title(f"Correlation of 1st Millisecond with Sebsequent Milliseconds in Round {round_number}")
 plt.grid(True)
 plt.show()
+
+

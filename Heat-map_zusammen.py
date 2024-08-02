@@ -2,8 +2,6 @@ import numpy as np
 import scipy.io
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
-import matplotlib.ticker as ticker
-from matplotlib.widgets import Slider
 import os
 
 
@@ -33,8 +31,8 @@ for filename in os.listdir(load_path):
    rounds.add(r)
 rounds = list(rounds)
 rounds.sort()
-print(data)
-print(rounds)
+#print(data)
+#print(rounds)
 
 # dB berechnen
 for key, value in data.items():
@@ -42,7 +40,7 @@ for key, value in data.items():
     
 
 data_array = np.array(list(data_db.values()))
-print(f'data_db',data_array)
+#print(f'data_db shape',data_array.shape)
 
 num_milliseconds = data_array.shape[2]
 
@@ -51,16 +49,24 @@ corr = np.zeros((len(round_numbers), len(round_numbers), num_milliseconds))
 
 # cross correlation berechnen
 for t in range(num_milliseconds):
+
     #print (f'Millisecond:', t)
+
     for i in range(len(round_numbers)):
+
         #print(f'Round number:', round_number)
+
+        data_i = data_array[i, :, t]
+
         for j in range(i, len(round_numbers)):
+          
           #print(f'Round number:', round_number)
-          data_i = data_array[i, :, t]
+
           data_j = data_array[j, :, t]
 
           corr_coef = np.corrcoef(data_i, data_j)
           #print(f'corr_coef',corr_coef)
+
           if i == j:
                 corr[i, j, t] = corr_coef[0, 0]  # calculate correlation with itself
           else:
@@ -73,42 +79,34 @@ for t in range(num_milliseconds):
 
 
 # Visualisierung
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+# colorbar
 colors = [(0, 0, 1), (1, 0, 0)]  # blue to red
 cmap_name = 'blue_red'
 cm = LinearSegmentedColormap.from_list(cmap_name, colors)
 
-# figur and axis
-fig, ax = plt.subplots()
-plt.subplots_adjust(bottom=0.25)
+
+# grid
+X, Y = np.meshgrid(round_numbers, round_numbers)
+for t in range(num_milliseconds):
+    Z = np.full_like(X, t)  
+    corr_t = corr[:, :, t]
+    surf=ax.plot_surface(X, Y, Z, facecolors=cm(corr_t),vmin=0,vmax=1)
 
 
-t0 = 0
-corr_t0 = corr[:, :, t0]
-heatmap = ax.imshow(corr_t0, cmap=cm, vmin=0, vmax=1, aspect='equal')
-cbar = plt.colorbar(heatmap, ax=ax)
+mappable = plt.cm.ScalarMappable(cmap=cm, norm=plt.Normalize(vmin=0, vmax=1))
+cbar = plt.colorbar(mappable, ax=ax)
 cbar.set_label('Cross-Correlation Coefficient', labelpad=10)
 
-ax.set_title('2D Heatmap of Cross-Correlation Matrix of CIRs in every millisecond')
+
+ax.set_title('4D Heatmap of Cross-Correlation Matrix of CIRs')
 ax.set_xlabel('Round')
 ax.set_ylabel('Round')
-ax.set_xticks(np.arange(len(round_numbers)))
-ax.set_yticks(np.arange(len(round_numbers)))
-ax.set_xticklabels(round_numbers)
-ax.set_yticklabels(round_numbers)
-ax.invert_yaxis()
-
-#  Slider 
-ax_slider = plt.axes([0.1, 0.1, 0.8, 0.05], facecolor='lightgoldenrodyellow')
-slider = Slider(ax_slider, 'Milliseconds', 0, num_milliseconds-1, valinit=t0, valfmt='%d ms')
-
-#Function for every ms
-def update(val):
-    t = int(slider.val)
-    corr_t = corr[:, :, t]
-    heatmap.set_data(corr_t)
-    fig.canvas.draw_idle()
+ax.set_zlabel('Milliseconds')
+ax.invert_xaxis()
 
 
-slider.on_changed(update)
 
 plt.show()

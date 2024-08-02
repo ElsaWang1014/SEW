@@ -35,7 +35,7 @@ print(rounds)
 for key, value in data.items():
     data_db[key] = 10 * np.log10(np.abs(value))
 
-#data_db.append(data_db)
+
 
 #Correlation
 correlations = []
@@ -49,9 +49,9 @@ for round_number in round_numbers:
 
   
     correlation = np.corrcoef(data_first_round,data_current_round)
-    #correlations.append(correlation)
+  
     correlations.append(correlation[0][1])
-    #correlations.append(correlation)
+    
     print(round_number,correlations)
     print(round_number,correlation)
 
@@ -64,7 +64,6 @@ plt.figure(figsize=(10, 6))
 plt.plot(round_numbers, correlations,color='b',marker='o', linestyle='-', linewidth=2)
 plt.xlabel("Rounds")
 plt.xticks(rounds)
-#plt.yticks(fontname = 'Arial')
 plt.ylabel("Correlation Coefficient")
 #plt.ylim([0,1])
 plt.title(f"Correlation of 1st Round with Rounds in Second {second}")

@@ -21,9 +21,6 @@ for round_number in round_numbers:
        print(f"File {filename} not found.")
 
 # concatenate data
-#if not data_db:
-   #print("No data found.")
-#else:
 data_db = np.concatenate(data_db, axis=1)
 
 # Correlation

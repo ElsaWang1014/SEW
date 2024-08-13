@@ -21,30 +21,26 @@ for round_number in round_numbers:
        print(f"File {filename} not found.")
 data_db = np.array(data_db) 
 
-mean_power = np.mean(data_db, axis=0)  
-mean_power = np.mean(mean_power, axis=1) 
+APDP = np.mean(np.mean(data_db, axis=0) , axis=1) 
+
 
 # Sampling interval (in seconds)
 sampling_interval = 1e-3
-num_delays = len(mean_power)
+num_delays = len(APDP)
 delays = np.arange(num_delays) * sampling_interval
 # Calculate Delay Spread (max delay - min delay)
 delay_spread = np.max(delays) - np.min(delays)
-print(f'Delay Spread: {delay_spread} seconds')
-
-# APDP
-APDP = mean_power  
+print(f'Delay Spread: {delay_spread} seconds') 
 
 #  APDP_value  
-APDP_value = np.sum(delays * mean_power) / np.sum(mean_power)
+APDP_value = np.sum(delays * APDP) / np.sum(APDP)
 
 #  RMS 
-rms_delay_spread = np.sqrt(np.sum((delays - APDP_value) ** 2 * mean_power) / np.sum(mean_power))
+rms_delay_spread = np.sqrt(np.sum((delays - APDP_value) ** 2 * APDP) / np.sum(APDP))
 print(f'RMS Delay Spread: {rms_delay_spread} seconds')
 
 # Figur
 plt.figure(figsize=(20, 10))
-
 plt.plot(delays*1000, APDP, color='b')
 plt.xlabel("Delay Zeit")
 plt.ylabel("APDP in dB")

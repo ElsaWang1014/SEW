@@ -2,10 +2,11 @@ import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import math
 
 # Informationen
 load_path = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_AGVHorizontal/"
-round_numbers = [77]
+round_numbers = [77,78,79,80,81,82]
 second = 2
 
 # die Daten für bestimmte Round und Zeit herunterladen
@@ -21,32 +22,44 @@ for round_number in round_numbers:
        print(f"File {filename} not found.")
 data_db = np.array(data_db) 
 
-APDP = np.mean(np.mean(data_db, axis=0) , axis=1) 
+#coherence Time
+c_licht = 3e8
+v = 0.6
+f_c = 2.4e9  #Hz
+#Doppler shift
+f_m = (v * f_c) / c_licht 
+T_c = 1 / f_m
+print(f"Coherence Time: {T_c} s")
 
 
 # Sampling interval (in seconds)
-sampling_interval = 1e-3
-num_delays = len(APDP)
+sampling_interval = 1e-6
+num_delays = data_db.shape[2]
 delays = np.arange(num_delays) * sampling_interval
-# Calculate Delay Spread (max delay - min delay)
-delay_spread = np.max(delays) - np.min(delays)
-print(f'Delay Spread: {delay_spread} seconds') 
 
-#  APDP_value  
-APDP_value = np.sum(delays * APDP) / np.sum(APDP)
-
-#  RMS 
-rms_delay_spread = np.sqrt(np.sum((delays - APDP_value) ** 2 * APDP) / np.sum(APDP))
-print(f'RMS Delay Spread: {rms_delay_spread} seconds')
-
-# Figur
-plt.figure(figsize=(20, 10))
-plt.plot(delays*1000, APDP, color='b')
-plt.xlabel("Delay Zeit")
-plt.ylabel("APDP in dB")
-plt.title(f"APDP in Rounds {round_numbers} and Second {second}")
+# Calculate Delay Spread and RMS Delay Spread
+for i, round_number in enumerate(round_numbers):
+    APDP = np.mean(data_db[i], axis=0)  # jeder round : APDP
 
 
+    delay_spread = np.max(delays) - np.min(delays)
+    print(f'Delay Spread: {delay_spread*1e6} us') 
+    
+    # Calculate RMS Delay Spread
+    rms_delay_spread = np.sqrt(np.sum(delays **2 *APDP)/np.sum (APDP)- (np.sum(APDP * delays) / np.sum(APDP))** 2 )
+    print(f'Round {round_number}: RMS Delay Spread: {rms_delay_spread*1e6} us')
+
+    co_bandwidth = 1 / (2*math.pi*rms_delay_spread)
+    print(f'Round {round_number}: coherence Banwidth: {co_bandwidth} ')
+    # Plot APDP for each round
+    plt.plot(delays*1000, APDP, label=f'Round {round_number}')
+
+# Figure
+plt.xlabel("Delay Time (seconds)")
+plt.ylabel("APDP (dB)")
+plt.title(f"APDP for Rounds {round_numbers} at Second {second}")
+plt.legend()
 
 plt.grid(True)
 plt.show()
+

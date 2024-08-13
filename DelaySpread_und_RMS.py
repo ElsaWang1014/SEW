@@ -21,9 +21,7 @@ for round_number in round_numbers:
        print(f"File {filename} not found.")
 data_db = np.array(data_db) 
 
-mean_power = np.mean(data_db, axis=0)  # 计算每个延迟点的平均值，结果形状为 (512, 1000)
-
-# 对 mean_power 进行平均，得到每个延迟点的平均功率
+mean_power = np.mean(data_db, axis=0)  
 mean_power = np.mean(mean_power, axis=1) 
 
 # Sampling interval (in seconds)
@@ -34,13 +32,13 @@ delays = np.arange(num_delays) * sampling_interval
 delay_spread = np.max(delays) - np.min(delays)
 print(f'Delay Spread: {delay_spread} seconds')
 
-# 计算 APDP
-APDP = mean_power  # APDP 就是 mean_power
+# APDP
+APDP = mean_power  
 
-# 计算 APDP 的值和 RMS 延迟扩展
+#  APDP_value  
 APDP_value = np.sum(delays * mean_power) / np.sum(mean_power)
 
-# 计算 RMS 延迟扩展
+#  RMS 
 rms_delay_spread = np.sqrt(np.sum((delays - APDP_value) ** 2 * mean_power) / np.sum(mean_power))
 print(f'RMS Delay Spread: {rms_delay_spread} seconds')
 

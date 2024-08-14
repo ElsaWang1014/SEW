@@ -96,10 +96,10 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-# Kafa-squared Distribution
+# Kafa Distribution
 plt.figure(figsize=(10, 6))
 
-plt.title('Chi-squared Distribution')
+plt.title('kafa Distribution')
 plt.xlabel('Data Value in dB')
 plt.ylabel('Probability Density')
 plt.legend()

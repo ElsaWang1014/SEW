@@ -25,7 +25,7 @@ data_db = np.array(data_db)
 #coherence Time
 c_licht = 3e8
 v = 0.6
-f_c = 2.4e9  #Hz
+f_c = 3.75e9  #Hz
 #Doppler shift
 f_m = (v * f_c) / c_licht 
 T_c = 1 / f_m
@@ -33,14 +33,13 @@ print(f"Coherence Time: {T_c} s")
 
 
 # Sampling interval (in seconds)
-sampling_interval = 1e-6
+sampling_interval = 10e-9
 num_delays = data_db.shape[2]
 delays = np.arange(num_delays) * sampling_interval
 
 # Calculate Delay Spread and RMS Delay Spread
 for i, round_number in enumerate(round_numbers):
     APDP = np.mean(data_db[i], axis=0)  # jeder round : APDP
-
 
     delay_spread = np.max(delays) - np.min(delays)
     print(f'Delay Spread: {delay_spread*1e6} us') 
@@ -53,6 +52,8 @@ for i, round_number in enumerate(round_numbers):
     print(f'Round {round_number}: coherence Banwidth: {co_bandwidth} ')
     # Plot APDP for each round
     plt.plot(delays*1000, APDP, label=f'Round {round_number}')
+
+
 
 # Figure
 plt.xlabel("Delay Time (seconds)")

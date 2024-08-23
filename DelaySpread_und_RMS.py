@@ -9,6 +9,7 @@ load_path = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_AGVHorizontal/
 round_numbers = [77,78,79,80,81,82]
 second = 2
 
+
 # die Daten für bestimmte Round und Zeit herunterladen
 data_db = []
 for round_number in round_numbers:
@@ -17,7 +18,7 @@ for round_number in round_numbers:
     if os.path.exists(full_filename):
       mat = scipy.io.loadmat(full_filename)
       cirs_data = mat["cirs"]
-      data_db.append(10 * np.log10(np.abs(cirs_data)** 2))
+      data_db.append((np.abs(cirs_data)** 2))
     else:
        print(f"File {filename} not found.")
 data_db = np.array(data_db) 
@@ -39,7 +40,7 @@ delays = np.arange(num_delays) * sampling_interval
 
 # Calculate Delay Spread and RMS Delay Spread
 for i, round_number in enumerate(round_numbers):
-    APDP = np.mean(data_db[i], axis=0)  # jeder round : APDP
+    APDP = 10 * np.log10*np.mean(data_db[i], axis=0)  # jeder round : APDP
 
     delay_spread = np.max(delays) - np.min(delays)
     print(f'Delay Spread: {delay_spread*1e6} us') 

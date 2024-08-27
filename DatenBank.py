@@ -13,7 +13,7 @@ rx_index = 1
 scenario_index = 1
 round_number = 77  
 
-############    linspetrum    #############################################################################
+############    cirs and linspetrum    #############################################################################
 filename = f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"
 full_filename = os.path.join(load_path, filename)
 if os.path.exists(full_filename):
@@ -26,7 +26,7 @@ cir_data = np.array(cir)
 lin_spec = mat["linSpectrum"]
 lin_spec = 10 * np.log10(np.abs(lin_spec)) 
 lin_spec_data = np.array(lin_spec)
-print("lin_spec_data:", lin_spec_data)
+#print("lin_spec_data:", lin_spec_data)
 
 ############      RF           ############################################################################
 list_all_files = os.listdir(load_path)
@@ -168,7 +168,7 @@ elif 77 <= round_number <= 82 or 131 <= round_number <= 136 or 232 <= round_numb
      polarization = 'senkrecht_mit_Antenne_AGV_Horizontal'
 else :
      polarization = 'senkrecht'
-print(f"Polarization:{polarization}")
+#print(f"Polarization:{polarization}")
 
 
 ############      Position                    ############################################################################
@@ -267,7 +267,7 @@ for time_index in time_indices:
 ############      save the file       ############################################################################
 save_path = "/media/campus/SEW/Bearbeitet_Data/Final"
 #json_filename = f"Round_{round_number}_RX_{rx_index}_RF_{rf_index}_Scenario_{scenario_index}_Second_{second}.json"
-json_filename = os.path.join(save_path, f"_Scenario_{scenario_index}_Round_{round_number}_RX_{rx_index}_RF_{rf_index}_Polarization_{polarization}_Uhrzeit_{time_for_round_formatted}_Second_{second}.json")
+json_filename = os.path.join(save_path, f"Scenario_{scenario_index}_Round_{round_number}_RX_{rx_index}_RF_{rf_index}_Polarization_{polarization}_Uhrzeit_{time_for_round_formatted}_Second_{second}.json")
 
 data = {
     "cir": cir_data.tolist(),

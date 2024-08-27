@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import math
+from scipy.signal import find_peaks
 
 # Informationen
 load_path = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_AGVHorizontal/"
@@ -11,17 +12,17 @@ second = 2
 
 
 # die Daten für bestimmte Round und Zeit herunterladen
-data_db = []
+data = []
 for round_number in round_numbers:
     filename = f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"
     full_filename = os.path.join(load_path, filename)
     if os.path.exists(full_filename):
       mat = scipy.io.loadmat(full_filename)
       cirs_data = mat["cirs"]
-      data_db.append((np.abs(cirs_data)** 2))
+      data.append((np.abs(cirs_data)** 2))
     else:
        print(f"File {filename} not found.")
-data_db = np.array(data_db) 
+data = np.array(data) 
 
 #coherence Time
 c_licht = 3e8
@@ -35,29 +36,51 @@ print(f"Coherence Time: {T_c} s")
 
 # Sampling interval (in seconds)
 sampling_interval = 10e-9
-num_delays = data_db.shape[2]
+num_delays = data.shape[2]
 delays = np.arange(num_delays) * sampling_interval
 
-# Calculate Delay Spread and RMS Delay Spread
-for i, round_number in enumerate(round_numbers):
-    APDP = 10 * np.log10*np.mean(data_db[i], axis=0)  # jeder round : APDP
+#Delay Spread
+delay_spread = np.max(delays) - np.min(delays)
+print(f'Delay Spread: {delay_spread*1e6} us') 
+num_milliseconds = data.shape[1]
+mean_apdp = np.zeros(num_milliseconds)
+#APDP_db_all = np.zeros((num_milliseconds, num_delays))
 
-    delay_spread = np.max(delays) - np.min(delays)
-    print(f'Delay Spread: {delay_spread*1e6} us') 
-    
+# Calculate Delay Spread and RMS Delay Spread
+for ms in range(num_milliseconds):
+    APDP = np.mean(data[:, ms, :], axis=0)  # jeder round : APDP
+    APDP_db = 10 * np.log10(APDP)
+    mean_apdp[ms] = np.mean(APDP_db)
+    #APDP_db_all[ms, :] = APDP_db
+
     # Calculate RMS Delay Spread
-    rms_delay_spread = np.sqrt(np.sum(delays **2 *APDP)/np.sum (APDP)- (np.sum(APDP * delays) / np.sum(APDP))** 2 )
+    rms_delay_spread = np.sqrt(np.sum(delays **2 *APDP_db)/np.sum (APDP_db)- (np.sum(APDP_db * delays) / np.sum(APDP_db))** 2 )
     print(f'Round {round_number}: RMS Delay Spread: {rms_delay_spread*1e6} us')
 
-    co_bandwidth = 1 / (2*math.pi*rms_delay_spread)
+    co_bandwidth = 1 / (2 * math.pi * rms_delay_spread)
     print(f'Round {round_number}: coherence Banwidth: {co_bandwidth} ')
     # Plot APDP for each round
-    plt.plot(delays*1000, APDP, label=f'Round {round_number}')
+    #plt.plot(delays*1000, APDP_db, label=f'Round {round_number}')
 
+
+time_array = np.arange(num_milliseconds) * sampling_interval 
+#time_array = np.arange(num_milliseconds) * 1e-3 
+print(f"Length of time_array: {len(time_array)}")
+print(f"Length of mean_apdp: {len(mean_apdp)}")
 
 
 # Figure
+plt.figure(figsize=(20, 6))
+plt.plot (time_array, mean_apdp , label='APDP')
+#for i in range(num_delays):
+    #plt.plot(time_array, APDP_db_all[:, i], label=f'Delay {i}')
+xticks = np.arange(0,np.max(time_array) ,0.2)
+yticks = np.arange (np.min(mean_apdp) - 1, np.max(mean_apdp) + 1,5)
 plt.xlabel("Delay Time (seconds)")
+plt.xticks(xticks)
+plt.yticks(yticks)
+plt.tight_layout()
+plt.ylim(np.min(mean_apdp) - 1, np.max(mean_apdp) + 1)
 plt.ylabel("APDP (dB)")
 plt.title(f"APDP for Rounds {round_numbers} at Second {second}")
 plt.legend()

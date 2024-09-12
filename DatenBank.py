@@ -13,6 +13,8 @@ rx_index = 1
 scenario_index = 1
 round_number = 77  
 
+
+
 ############    cirs and linspetrum    #############################################################################
 filename = f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"
 full_filename = os.path.join(load_path, filename)
@@ -270,9 +272,16 @@ save_path = "/media/campus/SEW/Bearbeitet_Data/Final"
 json_filename = os.path.join(save_path, f"Scenario_{scenario_index}_Round_{round_number}_RX_{rx_index}_RF_{rf_index}_Polarization_{polarization}_Uhrzeit_{time_for_round_formatted}_Second_{second}.json")
 
 data = {
+    "Scenario" : scenario_index,
+    "Round" : round_number,
+    "RX" : rx_index,
+    "RF" : rf_index,
+    "Polarization" : polarization,
+    "Uhrzeit" : time_for_round_formatted,
     "cir": cir_data.tolist(),
     "lin_spec": lin_spec_data.tolist(),
-    "position": position
+    "position": position,
+
 }
 with open(json_filename, 'w') as file:
         json.dump(data, file, indent=4)

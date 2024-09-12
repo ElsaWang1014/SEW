@@ -6,18 +6,22 @@ import json
 from datetime import datetime
 import pandas as pd
 
-load_path = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag2_Scenario3_Langzeitmessungen"
+load_path = "/media/student/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_Langzeitmessungen"
 
 rx_index = 1
-scenario_index = 3
-round_numbers = [205,206,207,208,209,210,211,212,213,214,215,217,218,219,220,221,222,223,224,225,226,227,228,229,230]
+scenario_index = 1
+round_numbers = [21,22,23,24,26,27,29,30,33,34,35,36,37,38,39,40,42,44,45,47,48,49,51,53,54,55,56,57,58,59,60,61,62,63,64,65,67,68,69,70,71,72,73,74,75,76]
 seconds = []
 data_by_seconds = {}
 
 
 for round_number in round_numbers:
+    data_by_seconds_rf_0 = {}
+    data_by_seconds_rf_1 = {}
     for filenames in os.listdir(load_path):
-        if filenames.startswith(f"Round_{round_number}_AP_1_RF_0_Sec_") and filenames.endswith(".mat"):
+        if filenames.startswith(f"Round_{round_number}_AP_1_") and filenames.endswith(".mat"):
+            string_entries = filenames.split('_')
+            rf_index = int(string_entries[5])
             r = int (filenames.split("_")[7].replace(".mat",""))
             seconds.append(r)
         
@@ -26,26 +30,33 @@ for round_number in round_numbers:
 
 
     for second in seconds:
+        for rf_index in [0, 1]:
         ############    cirs and linspetrum    #############################################################################
-        filename = f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"
-        full_filename = os.path.join(load_path, filename)
-        if os.path.exists(full_filename):
-            mat = scipy.io.loadmat(full_filename)
+            filename = f"Round_{round_number}_AP_1_RF_{rf_index}_Sec_{second}.mat"
+            full_filename = os.path.join(load_path, filename)
+            if os.path.exists(full_filename):
+                mat = scipy.io.loadmat(full_filename)
             #print(mat)
-        cir = mat["cirs"]
-        cir = 10 * np.log10(np.abs(cir))
-        cir_data = np.array(cir)
+            cir = mat["cirs"]
+            cir = 10 * np.log10(np.abs(cir))
+            cir_data = np.array(cir)
         #print(mat["cirs"])
-        lin_spec = mat["linSpectrum"]
-        lin_spec = 10 * np.log10(np.abs(lin_spec)) 
-        lin_spec_data = np.array(lin_spec)
+            lin_spec = mat["linSpectrum"]
+            lin_spec = 10 * np.log10(np.abs(lin_spec)) 
+            lin_spec_data = np.array(lin_spec)
         #print("lin_spec_data:", lin_spec_data)
-
-        data_by_seconds[f"{second} second"] = {
-                "cir": cir_data.tolist(),
-                "linSpectrum": lin_spec_data.tolist()
+            if rf_index == 0:
+                    data_by_seconds_rf_0[f"{second} second"] = {
+                        "cir": cir_data.tolist(),
+                        "linSpectrum": lin_spec_data.tolist()
+                    }
+            elif rf_index == 1:
+                    data_by_seconds_rf_1[f"{second} second"] = {
+                        "cir": cir_data.tolist(),
+                        "linSpectrum": lin_spec_data.tolist()
+       
             }
-
+    '''
     ############      RF           ############################################################################
     list_all_files = os.listdir(load_path)
     list_relevant_files = []
@@ -53,10 +64,14 @@ for round_number in round_numbers:
                 string_entries = file.split('_')
                 rf_index = int(string_entries[5])
     list_relevant_files.append(file)
-
+    '''
+    rf_data = {
+        "RF_0": data_by_seconds_rf_0,
+        "RF_1": data_by_seconds_rf_1
+    }
 
     ############      Time         ############################################################################
-    excel_file = '/home/campus/Desktop/Datenbearbeitung_1/Messplan.xlsx'
+    excel_file = '/home/student/Desktop/Datenbearbeitung_1/Messplan.xlsx'
 
     if scenario_index == 1 :
         sheets = ['Scenario 1']
@@ -137,7 +152,7 @@ for round_number in round_numbers:
         sheets = ['Scenario4']
         columns = [3,5]
 
-        row_ranges = [(17, 42), (45, 83), (87, 93), (100, 104)]
+        row_ranges = [(17, 42), (45, 83), (86, 93), (100, 104)]
 
         Uhrzeit = {}
 
@@ -283,25 +298,43 @@ for round_number in round_numbers:
 
 
     ############      save the file       ############################################################################
-    save_path = "/media/campus/SEW/Bearbeitet_Data/Final"
+    save_path = "/media/student/SEW/Bearbeitet_Data/Final"
     #json_filename = f"Round_{round_number}_RX_{rx_index}_RF_{rf_index}_Scenario_{scenario_index}_Second_{second}.json"
-    json_filename = os.path.join(save_path, f"Scenario_{scenario_index}_Round_{round_number}_RX_{rx_index}_RF_{rf_index}_Polarization_{polarization}_Uhrzeit_{time_for_round_formatted}.json")
+ 
+    if data_by_seconds_rf_0:
+        json_filename_rf_0 = os.path.join(save_path, f"Scenario_{scenario_index}_Round_{round_number}_RX_{rx_index}_RF_0_Polarization_{polarization}_Uhrzeit_{time_for_round_formatted}.json")
+        data_rf_0 = {
+            "Scenario": scenario_index,
+            "Round": round_number,
+            "RX": rx_index,
+            "RF": 0,
+            "Polarization": polarization,
+            "Uhrzeit": time_for_round_formatted,
+            "cir and Linspectrum": data_by_seconds_rf_0, 
+            "position": position,
+        }
+        with open(json_filename_rf_0, 'w') as file:
+            json.dump(data_rf_0, file, indent=4)
+        print(f"Data saved to {json_filename_rf_0}")
 
-    data = {
-        "Scenario" : scenario_index,
-        "Round" : round_number,
-        "RX" : rx_index,
-        "RF" : rf_index,
-        "Polarization" : polarization,
-        "Uhrzeit" : time_for_round_formatted,
-        "cir and Linspectrum": data_by_seconds,
-        "position": position,
 
-    }
-    with open(json_filename, 'w') as file:
-            json.dump(data, file, indent=4)
+    if data_by_seconds_rf_1:
+        json_filename_rf_1 = os.path.join(save_path, f"Scenario_{scenario_index}_Round_{round_number}_RX_{rx_index}_RF_1_Polarization_{polarization}_Uhrzeit_{time_for_round_formatted}.json")
+        data_rf_1 = {
+            "Scenario": scenario_index,
+            "Round": round_number,
+            "RX": rx_index,
+            "RF": 1,
+            "Polarization": polarization,
+            "Uhrzeit": time_for_round_formatted,
+            "cir and Linspectrum": data_by_seconds_rf_1,  
+            "position": position,
+        }
+        with open(json_filename_rf_1, 'w') as file:
+            json.dump(data_rf_1, file, indent=4)
+        print(f"Data saved to {json_filename_rf_1}")
 
-    print(f"Data saved to {json_filename}")
+    
 
 
     ############      plot       ############################################################################

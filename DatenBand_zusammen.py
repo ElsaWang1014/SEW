@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 import pandas as pd
 
-load_path = "/media/student/SEW/Bearbeitet_Data/RX3/Tag1_Scenario2_D2D"
+load_path = "/media/student/SEW/Bearbeitet_Data/Rx2/Tag1_Scenario2_D2D"
 
 rx_index = 2
 scenario_index = 2

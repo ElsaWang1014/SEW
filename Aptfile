@@ -2,4 +2,4 @@ build-essential
 libxml2-dev
 libxslt-dev
 libffi-dev
-libcairo2-dev
+libdbus-1-dev

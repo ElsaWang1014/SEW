@@ -1,2 +1,2 @@
-web: python DelaySpread_und_RMS_web.py
+web: gunicorn DelaySpread_und_RMS:app
 

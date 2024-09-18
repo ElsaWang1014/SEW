@@ -2,6 +2,7 @@ absl-py==2.1.0
 appdirs==1.4.4
 astunparse==1.6.3
 attrs==21.2.0
+apturl==0.5.2
 bcrypt==3.2.0
 beautifulsoup4==4.10.0
 beniget==0.4.1

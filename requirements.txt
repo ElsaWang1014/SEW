@@ -22,7 +22,6 @@ dash-table==5.0.0
 dbus-python==1.2.18
 decorator==4.4.2
 distro==1.7.0
-duplicity==0.8.21
 et-xmlfile==1.1.0
 fasteners==0.14.1
 Flask==3.0.3

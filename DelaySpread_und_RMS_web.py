@@ -5,8 +5,6 @@ import os
 import math
 from scipy.signal import find_peaks
 from matplotlib.widgets import Slider
-
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html

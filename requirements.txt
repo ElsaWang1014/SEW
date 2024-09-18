@@ -21,7 +21,6 @@ dash-html-components==2.0.0
 dash-table==5.0.0
 dbus-python==1.2.18
 decorator==4.4.2
-defer==1.0.6
 distro==1.7.0
 distro-info==1.1+ubuntu0.2
 duplicity==0.8.21

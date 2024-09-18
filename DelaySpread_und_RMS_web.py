@@ -2,6 +2,7 @@ import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from flask import Flask
 import math
 from scipy.signal import find_peaks
 from matplotlib.widgets import Slider
@@ -10,6 +11,12 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
+
+
+app = Flask(__name__)
+@app.route('/')
+def index():
+    return "Hello, Heroku!"
 
 # load data
 def load_data(load_path, round_numbers, num_seconds=25):
@@ -145,7 +152,9 @@ def update_graph(ms):
 
     return apdp_figure, rms_figure
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
 
 

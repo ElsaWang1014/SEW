@@ -67,7 +67,7 @@ f_c = 3.75e9  #Hz
 #Doppler shift
 f_m = (v * f_c) / c_licht 
 T_c = 1 / f_m
-#print(f"Coherence Time: {T_c} s")
+print(f"Coherence Time: {T_c} s")
 
 
 # Sampling interval (in seconds)
@@ -85,11 +85,9 @@ num_milliseconds = data.shape[2]
 #print(f"num_milliseconds:{data.shape[2]}")
 APDP_db_all = []
 all_peaks_all = []
-#rms_delay_spread_1_array = np.zeros(num_milliseconds)
+
 rms_delay_spread_2_array = np.zeros(num_milliseconds)
-#mean_rms_delay_spread_1_array = np.zeros(num_milliseconds)
-mean_rms_delay_spread_2_array = np.zeros(num_milliseconds)
-#co_bandwidth_1 = np.zeros(num_milliseconds)
+
 co_bandwidth_2 = np.zeros(num_milliseconds)
 all_peaks = np.zeros(num_delays*num_milliseconds)
 

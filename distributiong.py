@@ -11,102 +11,86 @@ from scipy.stats import weibull_min, norm, gamma, laplace,kstest
 from sklearn.metrics import mean_squared_error
 from matplotlib.widgets import Slider
 import pandas as pd
+import tensorflow as tf
 
-'''# Informationen
-load_path = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_AGVHorizontal/"
-round_numbers = [77]
-second = 2
+#print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
-# die Daten für bestimmte Round und Zeit herunterladen
-data_db = []
-for round_number in round_numbers:
-    filename = f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"
-    full_filename = os.path.join(load_path, filename)
-    if os.path.exists(full_filename):
-      mat = scipy.io.loadmat(full_filename)
-      cirs_data = mat["cirs"]
-      data_db.append(10 * np.log10(np.abs(cirs_data)** 2))
-    else:
-       print(f"File {filename} not found.")
-data_db = np.array(data_db) 
-num_samples = data_db.shape[0]
-print(f"data shape 0 : {data_db.shape[0]}")
-#one dimension
-
-min_height_1 = np.max(data_flat) - 40
-peaks_1, peak_heights = find_peaks(data_flat, height = min_height_1, prominence = (0.1, None))
-
-APDP_db = DelaySpread_und_RMS.APDP_db
-min_height_2 = np.max(APDP_db) - 40
-peaks_2, peak_heights = find_peaks(APDP_db, height = min_height_2, prominence = (0.1, None))
-'''
 #Data 
 data_flat = DelaySpread_und_RMS.data.flatten()
-num_milliseconds = DelaySpread_und_RMS.data.shape[2]
+num_milliseconds = DelaySpread_und_RMS.num_milliseconds
+num_delays = DelaySpread_und_RMS.num_delays
 
 peaks = DelaySpread_und_RMS.all_peaks_all
-#peaks = np.concatenate(peaks)
+print(f"All peaks: {peaks}")
+num_peaks_ms = []
+for ms_peaks in peaks:
+    
+    count = len(ms_peaks)
+    num_peaks_ms.append(count)
+print( f"peaks number :{num_peaks_ms} ")
+num_MPC = []
+
+# Collect all peaks for the milliseconds in this second
 
 for sec in range(0,25):
+    num_MPC_1 = []
     start_ms = sec * 1000
     end_ms = min((sec + 1) * 1000, num_milliseconds)
-    num_MPC = [len(peaks[ms]) for ms in range(start_ms, end_ms) ]
-    #print (f" peaks :{peaks_for_second}")
-    # Collect all peaks for the milliseconds in this second
-
-    num_MPC.append(num_MPC)
-    #print(num_MPC)
-
-'''def flatten_list(nested_list):
-    flat_list = []
-    stack = list(nested_list)
+    for ms in range(start_ms, end_ms):
+        num_MPC_1.append(num_peaks_ms[ms])
+    print (f" peaks :{num_MPC_1}")
     
-    while stack:
-        item = stack.pop()
-        if isinstance(item, list):
-            stack.extend(item)
-        else:
-            flat_list.append(item)
-    
-    return flat_list'''
+    num_MPC.append(num_MPC_1)
+num_MPC = np.array (num_MPC)
+print(num_MPC)
 
-df = pd.DataFrame(num_MPC)
-
-num_MPC_flat = df.values.flatten()
 
 delays =  DelaySpread_und_RMS.delays
 
 RMS_DS_2 =  DelaySpread_und_RMS.rms_delay_spread_2_array
-#RMS_DS_2 = np.concatenate(RMS_DS_2)
 RMS_DS_2_per_second = []
-for sec in range(0,25):
+'''for sec in range(0,25):
+    RMS_DS_2_for_second = np.zeros(num_milliseconds)
     start_ms = sec * 1000
     end_ms = min((sec + 1) * 1000, num_milliseconds)
-    RMS_DS_2_for_second = [RMS_DS_2[ms] for ms in range(start_ms, end_ms) ]
-    '''print (f" rms ds :{RMS_DS_2_for_second}")
+    for ms in range(start_ms, end_ms):
+        RMS_DS_2_for_second[ms - start_ms] = RMS_DS_2[ ms]
+    print (f" rms ds :{RMS_DS_2_for_second}")
     # Collect all RMS_DS_2 for the milliseconds in this second
     if RMS_DS_2_for_second:
         RMS_DS_2_for_second = np.concatenate(RMS_DS_2_for_second)
-    '''
+    
 
-    RMS_DS_2_per_second.append(RMS_DS_2_for_second)
+    RMS_DS_2_per_second.append(RMS_DS_2_for_second)'''
 
 Bc_2 =  DelaySpread_und_RMS.co_bandwidth_2
-#Bc_2 = np.concatenate(Bc_2)
 Bc_2_per_second = []
-for sec in range(0,25):
+'''for sec in range(0,25):
+    Bc_2_for_second = np.zeros(num_milliseconds)
     start_ms = sec * 1000
     end_ms = min((sec + 1) * 1000, num_milliseconds)
-    Bc_2_for_second = [Bc_2[ms] for ms in range(start_ms, end_ms) ]
-    '''print (f" bc :{Bc_2_for_second}")
+    for ms in range(start_ms, end_ms):
+        Bc_2_for_second[ms - start_ms] = Bc_2[ ms]
+    print (f" bc :{Bc_2_for_second}")
     # Collect all Bc_2 for the milliseconds in this second
     if Bc_2_for_second:
         Bc_2_for_second = np.concatenate(RMS_DS_2_for_second)
-    '''
+    
 
-    RMS_DS_2_per_second.append(RMS_DS_2_for_second)
+    Bc_2_per_second.append(Bc_2_for_second)'''
 
+def data_per_second(val):
+    val_per_second = []
+    for sec in range(0,25):
+        val_for_second = np.zeros(num_milliseconds)
+        start_ms = sec * 1000
+        end_ms = min((sec + 1) * 1000, num_milliseconds)
+        for ms in range(start_ms, end_ms):
+            val_for_second[ms - start_ms] = val[ms]
 
+    val_per_second.append(val_for_second)
+        
+    return val_per_second
 
 
 
@@ -116,7 +100,7 @@ def update_num_bins(val, resolution=3):
     #val = np.concatenate(val)
     
     edges = np.histogram_bin_edges(val, bins='auto')
-    bin_width = edges[1] - edges[0]  
+    #bin_width = edges[1] - edges[0]  
     num_bins = len(edges) - 1  
     
     adjusted_num_bins = int(num_bins * resolution)
@@ -141,6 +125,7 @@ def CDF (val):
 
 
 def Weibull (val):
+    num_MPC = np.ravel(num_MPC)
     shape, loc, scale = weibull_min.fit(val, floc=0)
     bin_no = num_bin
     data_entries, bins = np.histogram(val, bin_no)
@@ -206,7 +191,7 @@ plt.ylabel('Cumulative Probability')
 plt.legend()
 plt.grid(True)
 
-patches = []
+
 
 ################ peak APDP   ###############################################################################
 '''#parameters
@@ -236,52 +221,22 @@ plt.plot(log_p2, stats.lognorm.pdf(log_p2, shape_log_p2, loc_log_p2, scale_log_p
 #Laplace
 plt.plot(laplace_p2, stats.laplace.pdf(laplace_p2, loc_laplace_p2,scale_laplace_p2), lw=2, label='Laplace Distribution')
 '''
-num_bin = update_num_bins (num_MPC)
-
-# figure
-fig, ax = plt.subplots(figsize=(10, 6))
-plt.subplots_adjust(left=0.1, bottom=0.25)
-# Initial plot: Get the first set of peaks
-current_ms = 0
-num_MPC = num_MPC[current_ms]  # Get the peaks for the first millisecond
-
-# Initial
-hist_plot, = plt.plot([], [], 'k-', label='Histogram')
-'''weibull_plot, = plt.plot([], [], 'r-', lw=2, alpha=0.6, label='Weibull PDF')
-normal_plot, = plt.plot([], [], 'g-', lw=2, alpha=0.6, label='Normal PDF')
-gamma_plot, = plt.plot([], [], 'b-', lw=2, alpha=0.6, label='Gamma PDF')
-log_plot, = plt.plot([], [], 'm-', lw=2, alpha=0.6, label='Log-Normal PDF')
-laplace_plot, = plt.plot([], [], 'c-', lw=2, alpha=0.6, label='Laplace PDF')'''
+#num_bin = update_num_bins (num_MPC)
 
 
-'''weibull_p2 = Weibull (peaks_per_second)
-#shape_p2, loc_p2, scale_p2 = weibull_min.fit(peaks_per_second, floc=0)
-normal_p2 = Normal (peaks_per_second)
-gamma_p2 = gamma_function (peaks_per_second)
-log_p2 = log (peaks_per_second)
-laplace_p2 = laplace_function (peaks_per_second)'''
-# hist
-hist_2, bin_edges_2 = np.histogram(num_MPC, bins=num_bin)
-#x_vals = np.linspace(min(delays_peaks), max(delays_peaks), 100)
-
-
-# slider
-ax_slider = plt.axes([0.1, 0.1, 0.65, 0.03], facecolor='lightgoldenrodyellow')
-slider = Slider(ax_slider, 'Seconds', valmin=1, valmax=25, valinit=0, valstep=1)
 
 # update 
 def update(val):
     
-    sec = int(slider.val)
-    num_MPC = num_MPC[sec]
+    sec = int(val)-1
+    num_MPC_sec = num_MPC[sec]
     
-    x_val = x_vals(num_MPC,num_bin)
-    
+    num_bin = update_num_bins([num_MPC_sec])
     ax.clear()
-    hist_vals, bins, _ = ax.hist(num_MPC, bins='auto', density=True, alpha=0.6, color='gray')
+    hist_vals, bins,  patches = ax.hist(num_MPC_sec, bins=num_bin, density=True, label='Histogram')
 
     
-    # Fit the updated data
+    '''# Fit the updated data
     weibull_pdf, x_vals_wb = Weibull(num_MPC)
     normal_pdf, x_vals_n = Normal(num_MPC)
     gamma_pdf, x_vals_g = gamma_function(num_MPC)
@@ -290,14 +245,14 @@ def update(val):
 
 
     # Plot the fitting curves
-    ax.plot(x_vals_wb, weibull_pdf, 'r-', lw=2, alpha=0.6, label='Weibull PDF')
-    ax.plot(x_vals_n, normal_pdf, 'g-', lw=2, alpha=0.6, label='Normal PDF')
-    ax.plot(x_vals_g, gamma_pdf, 'b-', lw=2, alpha=0.6, label='Gamma PDF')
-    ax.plot(x_vals_ln, lognorm_pdf, 'm-', lw=2, alpha=0.6, label='Log-normal PDF')
-    ax.plot(x_vals_lp, laplace_pdf, 'c-', lw=2, alpha=0.6, label='Laplace PDF')
+    weibull_line, = ax.plot(x_vals_wb, weibull_pdf, 'r-', lw=2, alpha=0.6, label='Weibull PDF')
+    normal_line, = ax.plot(x_vals_n, normal_pdf, 'g-', lw=2, alpha=0.6, label='Normal PDF')
+    gamma_line, = ax.plot(x_vals_g, gamma_pdf, 'b-', lw=2, alpha=0.6, label='Gamma PDF')
+    lognorm_line, = ax.plot(x_vals_ln, lognorm_pdf, 'm-', lw=2, alpha=0.6, label='Log-normal PDF')
+    laplace_line, = ax.plot(x_vals_lp, laplace_pdf, 'c-', lw=2, alpha=0.6, label='Laplace PDF')
 
 
-    '''# Update the fitting curves
+    # Update the fitting curves
     weibull_line.set_ydata(weibull_pdf)
     normal_line.set_ydata(normal_pdf)
     gamma_line.set_ydata(gamma_pdf)
@@ -312,17 +267,55 @@ def update(val):
     ax.grid(True)
     fig.canvas.draw_idle()
 
+
+# figure
+fig, ax = plt.subplots(figsize=(10, 6))
+plt.subplots_adjust(left=0.1, bottom=0.25)
+# Initial plot: Get the first set of peaks
+first_sec = 0
+num_MPC_initial = num_MPC[first_sec]  # Get the peaks for the first millisecond
+num_bin = update_num_bins([num_MPC_initial])
+# Initial
+hist_vals, bins, patches= ax.hist(num_MPC_initial, bins=num_bin, density=True,label='Histogram')
+weibull_plot, = ax.plot([], [], 'r-', lw=2, alpha=0.6, label='Weibull PDF')
+normal_plot, = ax.plot([], [], 'g-', lw=2, alpha=0.6, label='Normal PDF')
+gamma_plot, = ax.plot([], [], 'b-', lw=2, alpha=0.6, label='Gamma PDF')
+log_plot, = ax.plot([], [], 'm-', lw=2, alpha=0.6, label='Log-Normal PDF')
+laplace_plot, = ax.plot([], [], 'c-', lw=2, alpha=0.6, label='Laplace PDF')
+
+ax.set_title(f"MPC Histogram and Fitting for Second {sec}")
+ax.set_xlabel('MPC_APDP')
+ax.set_ylabel('PDF')
+ax.legend(loc="upper right")
+ax.grid(True)
+
+'''weibull_p2 = Weibull (num_MPC)
+#shape_p2, loc_p2, scale_p2 = weibull_min.fit(peaks_per_second, floc=0)
+normal_p2 = Normal (num_MPC)
+gamma_p2 = gamma_function (num_MPC)
+log_p2 = log (num_MPC)
+laplace_p2 = laplace_function (num_MPC)'''
+# hist
+#hist_2, bin_edges_2 = np.histogram(num_MPC, bins=num_bin)
+#x_vals = np.linspace(min(delays_peaks), max(delays_peaks), 100)
+
+
+# slider
+ax_slider = plt.axes([0.2, 0.1, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+slider = Slider(ax_slider, 'Seconds', valmin=1, valmax=25, valinit=1, valstep=1)
 slider.on_changed(update)
+
+
 plt.show()
 
-'''
-#Error calculation
+
+'''#Error calculation
 #RMSE
-rmse_weibull2 = calculate_rmse(hist_2, pdf_p2)
-rmse_normal2 = calculate_rmse(hist_2, normal_p2)
-rmse_gamma2 = calculate_rmse(hist_2, gamma_p2)
-rmse_log2 = calculate_rmse(hist_2, log_p2)
-rmse_laplace2 = calculate_rmse(hist_2, laplace_p2)
+rmse_weibull2 = calculate_rmse(hist_vals, weibull_p2)
+rmse_normal2 = calculate_rmse(hist_vals, normal_p2)
+rmse_gamma2 = calculate_rmse(hist_vals, gamma_p2)
+rmse_log2 = calculate_rmse(hist_vals, log_p2)
+rmse_laplace2 = calculate_rmse(hist_vals, laplace_p2)
 print("Weibull RMSE for APDP: ", rmse_weibull2)
 print("Normal RMSE for APDP: ", rmse_normal2)
 print("Gamma RMSE for APDP: ", rmse_gamma2)
@@ -349,9 +342,9 @@ print(f"KS-weibull for APDP: {ks_weibull2}, p-Wert for APDP: {p_weibull2}")
 print(f"KS-Normal for APDP: {ks_normal2}, p-Wert for APDP: {p_normal2}")
 print(f"KS-Gamma for APDP: {ks_gamma2}, p-Wert for APDP: {p_gamma2}")
 print(f"KS-Log for APDP: {ks_log2}, p-Wert for APDP: {p_log2}")
-print(f"KS-Laplace for APDP: {ks_laplace2}, p-Wert for APDP: {p_laplace2}")
+print(f"KS-Laplace for APDP: {ks_laplace2}, p-Wert for APDP: {p_laplace2}")'''
 
-'''
+
 
 
 

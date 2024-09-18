@@ -6,11 +6,11 @@ import json
 from datetime import datetime
 import pandas as pd
 
-load_path = "/media/student/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_Langzeitmessungen"
+load_path = "/media/student/SEW/Bearbeitet_Data/RX3/Tag1_Scenario2_D2D"
 
-rx_index = 1
-scenario_index = 1
-round_numbers = [21,22,23,24,26,27,29,30,33,34,35,36,37,38,39,40,42,44,45,47,48,49,51,53,54,55,56,57,58,59,60,61,62,63,64,65,67,68,69,70,71,72,73,74,75,76]
+rx_index = 2
+scenario_index = 2
+round_numbers = [137,138,140,141,142,143,144,145,146,147,148,149,150]
 seconds = []
 data_by_seconds = {}
 

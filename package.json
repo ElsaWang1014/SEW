@@ -2,7 +2,7 @@
   "name": "python-app",
   "version": "1.0.0",
   "scripts": {
-    "start": "python3 DelaySpread_und_RMS_web.py"
+    "start": "python3 DelaySpread_und_RMS_streamlit.py"
   },
   "engines": {
     "node": "14.x"

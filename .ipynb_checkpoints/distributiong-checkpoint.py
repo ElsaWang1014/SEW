@@ -21,13 +21,13 @@ num_milliseconds = DelaySpread_und_RMS.num_milliseconds
 num_delays = DelaySpread_und_RMS.num_delays
 
 peaks = DelaySpread_und_RMS.all_peaks_all
-#print(f"All peaks: {peaks}")
+print(f"All peaks: {peaks}")
 num_peaks_ms = []
 for ms_peaks in peaks:
     
     count = len(ms_peaks)
     num_peaks_ms.append(count)
-#print( f"peaks number :{num_peaks_ms} ")
+print( f"peaks number :{num_peaks_ms} ")
 num_MPC = []
 
 # Collect all peaks for the milliseconds in this second
@@ -38,11 +38,11 @@ for sec in range(0,25):
     end_ms = min((sec + 1) * 1000, num_milliseconds)
     for ms in range(start_ms, end_ms):
         num_MPC_1.append(num_peaks_ms[ms])
-    #print (f" peaks :{num_MPC_1}")
+    print (f" peaks :{num_MPC_1}")
     
     num_MPC.append(num_MPC_1)
 num_MPC = np.array (num_MPC)
-#print(num_MPC)
+print(num_MPC)
 
 
 delays =  DelaySpread_und_RMS.delays
@@ -104,7 +104,7 @@ def update_num_bins(val, resolution=3):
     num_bins = len(edges) - 1  
     
     adjusted_num_bins = int(num_bins * resolution)
-    print (f"bins:{adjusted_num_bins}")
+    
     return adjusted_num_bins
 
 
@@ -231,12 +231,12 @@ def update(val):
     sec = int(val)-1
     num_MPC_sec = num_MPC[sec]
     
-    num_bin = 40
+    num_bin = update_num_bins([num_MPC_sec])
     ax.clear()
     hist_vals, bins,  patches = ax.hist(num_MPC_sec, bins=num_bin, density=True, label='Histogram')
 
     
-    # Fit the updated data
+    '''# Fit the updated data
     weibull_pdf, x_vals_wb = Weibull(num_MPC)
     normal_pdf, x_vals_n = Normal(num_MPC)
     gamma_pdf, x_vals_g = gamma_function(num_MPC)
@@ -257,7 +257,7 @@ def update(val):
     normal_line.set_ydata(normal_pdf)
     gamma_line.set_ydata(gamma_pdf)
     lognorm_line.set_ydata(lognorm_pdf)
-    laplace_line.set_ydata(laplace_pdf)
+    laplace_line.set_ydata(laplace_pdf)'''
 
 
     ax.set_title(f"MPC Histogram and Fitting for Second {sec}")
@@ -289,12 +289,12 @@ ax.set_ylabel('PDF')
 ax.legend(loc="upper right")
 ax.grid(True)
 
-weibull_p2 = Weibull (num_MPC)
+'''weibull_p2 = Weibull (num_MPC)
 #shape_p2, loc_p2, scale_p2 = weibull_min.fit(peaks_per_second, floc=0)
 normal_p2 = Normal (num_MPC)
 gamma_p2 = gamma_function (num_MPC)
 log_p2 = log (num_MPC)
-laplace_p2 = laplace_function (num_MPC)
+laplace_p2 = laplace_function (num_MPC)'''
 # hist
 #hist_2, bin_edges_2 = np.histogram(num_MPC, bins=num_bin)
 #x_vals = np.linspace(min(delays_peaks), max(delays_peaks), 100)

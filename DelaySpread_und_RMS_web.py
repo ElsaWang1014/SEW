@@ -13,10 +13,6 @@ from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 
 
-app = Flask(__name__)
-@app.route('/')
-def index():
-    return "Hello, Heroku!"
 
 # load data
 def load_data(load_path, round_numbers, num_seconds=25):

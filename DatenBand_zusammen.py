@@ -6,11 +6,11 @@ import json
 from datetime import datetime
 import pandas as pd
 
-load_path = "/media/student/SEW/Bearbeitet_Data/Rx2/Tag1_Scenario2_D2D"
+load_path = "/media/student/SEW/Bearbeitet_Data/Rx2/Tag2_Scenario3_Besondermessungen"
 
 rx_index = 2
-scenario_index = 2
-round_numbers = [137,138,140,141,142,143,144,145,146,147,148,149,150]
+scenario_index = 3
+round_numbers = [243,244,245,246,247,248,250,251,252,253,254,257,258,259,260,261,262,264,265,266]
 seconds = []
 data_by_seconds = {}
 
@@ -19,23 +19,24 @@ for round_number in round_numbers:
     data_by_seconds_rf_0 = {}
     data_by_seconds_rf_1 = {}
     for filenames in os.listdir(load_path):
-        if filenames.startswith(f"Round_{round_number}_AP_1_") and filenames.endswith(".mat"):
+        if filenames.startswith(f"Round_{round_number}") and filenames.endswith(".mat"):
             string_entries = filenames.split('_')
             rf_index = int(string_entries[5])
             r = int (filenames.split("_")[7].replace(".mat",""))
             seconds.append(r)
         
         #ordnen wie 1,2,3,...
-        seconds.sort()
+    seconds.sort()
 
 
     for second in seconds:
         for rf_index in [0, 1]:
         ############    cirs and linspetrum    #############################################################################
-            filename = f"Round_{round_number}_AP_1_RF_{rf_index}_Sec_{second}.mat"
+            filename = f"Round_{round_number}_AP_2_RF_{rf_index}_Sec_{second}.mat"
             full_filename = os.path.join(load_path, filename)
+            
             if os.path.exists(full_filename):
-                mat = scipy.io.loadmat(full_filename)
+                 mat = scipy.io.loadmat(full_filename)
             #print(mat)
             cir = mat["cirs"]
             cir = 10 * np.log10(np.abs(cir))

@@ -1,0 +1,14 @@
+{
+  "name": "python-app",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "python3 DelaySpread_und_RMS_web.py"
+  },
+  "engines": {
+    "node": "14.x"
+  },
+  "dependencies": {
+    "python": "3.9.x"
+  }
+}
+

@@ -7,11 +7,10 @@ import os
 import DelaySpread_und_RMS
 from scipy.optimize import curve_fit
 from scipy.signal import find_peaks
-from scipy.stats import weibull_min, norm, gamma, laplace
+from scipy.stats import weibull_min, norm, gamma, laplace,kstest
 from sklearn.metrics import mean_squared_error
 from matplotlib.widgets import Slider
-import pandas as pd
-#import tensorflow as tf
+
 
 #print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
@@ -108,7 +107,7 @@ def update_num_bins(val, resolution=3):
     return adjusted_num_bins
 
 
-def CDF (val):
+'''def CDF (val):
     bin_no = np.linspace(np.amin(val), np.amax(val), len(val))
     data_entries, bins = np.histogram(val, bin_no)
     data_entries = data_entries / sum(data_entries)
@@ -121,7 +120,7 @@ def CDF (val):
     
     popt_cumsum_gauss, pcov_cumsum_gauss = curve_fit(gauss_cdf, bincenters, cdf_meas_data, p0=[np.average(val), 1], maxfev=1000000)
   
-    return bincenters, cdf_meas_data, popt_cumsum_gauss, gauss_cdf
+    return bincenters, cdf_meas_data, popt_cumsum_gauss, gauss_cdf'''
 
 
 def Weibull (val):
@@ -145,6 +144,7 @@ def Normal (val):
     return pdf, x
 
 def gamma_function (val):
+    val = np.ravel(val)
     shape, loc, scale = stats.gamma.fit(val)
     x = np.linspace(min(val), max(val), num_bin)
     pdf = gamma.pdf(x, shape, loc=loc, scale=scale)
@@ -152,6 +152,7 @@ def gamma_function (val):
     return pdf, x
 
 def log (val):
+    val = np.ravel(val)
     abs_data = np.abs(val)
     abs_data = abs_data[abs_data > 0]
     shape, loc, scale = stats.lognorm.fit(abs_data, floc=0)
@@ -161,6 +162,7 @@ def log (val):
     return pdf, x
 
 def laplace_function (val):
+    val = np.ravel(val)
     loc, scale = stats.laplace.fit(val)
     x = np.linspace(min(val), max(val), num_bin)
     pdf = laplace.pdf(x, loc, scale)
@@ -180,7 +182,7 @@ def x_vals (val,num_bin):
     return x_vals
 
 
-#cdf fitting
+'''#cdf fitting
 bincenters, cdf_meas_data, popt_cumsum_gauss, gauss_cdf = CDF (data_flat)
 
 plt.figure(figsize=(10,6))
@@ -189,39 +191,12 @@ plt.plot(bincenters, gauss_cdf(bincenters, *popt_cumsum_gauss), color="green", l
 plt.xlabel('Data Value')
 plt.ylabel('Cumulative Probability')
 plt.legend()
-plt.grid(True)
+plt.grid(True)'''
 
 
 
 ################ peak APDP   ###############################################################################
-'''#parameters
 
-num_bin = update_num_bins (peaks)
-pdf_p2,cdf_p2,weibull_p2 = Weibull (peaks)
-shape_p2, loc_p2, scale_p2 = weibull_min.fit(peaks, floc=0)
-mu_p2,std_p2,normal_p2 = Normal (peaks)
-shape_gamma_p2, loc_gamma_p2, scale_gamma_p2,gamma_p2 = gamma (peaks)
-shape_log_p2, loc_log_p2, scale_log_p2,log_p2 = log (peaks)
-loc_laplace_p2, scale_laplace_p2,laplace_p2 = laplace (peaks)
-hist_2, bin_edges_2 = np.histogram(peaks, bins=num_bin)
-
-#figure
-plt.figure(figsize=(10,6))
-#Histogram
-plt.hist(peaks,bins=num_bin,density=True,label='MPC_APDP')  
-#Weibull                                                 
-plt.plot(weibull_p2, pdf_p2, 'r-', lw=2, alpha=0.6, label='Weibull PDF')                          
-#plt.plot(weibull_p1, cdf_p1, 'b-', lw=2, alpha=0.6, label='Weibull CDF')       
-#Normal             
-plt.plot(normal_p2, stats.norm.pdf(normal_p2, mu_p2, std_p2), lw=2, label='Normal Distribution')  
-#Gamma
-plt.plot(gamma_p2, stats.gamma.pdf(gamma_p2, shape_gamma_p2, loc_gamma_p2, scale_gamma_p2), lw=2, label='Gamma Distribution')
-#Log
-plt.plot(log_p2, stats.lognorm.pdf(log_p2, shape_log_p2, loc_log_p2, scale_log_p2), lw=2, label='Log-Normal Distribution')
-#Laplace
-plt.plot(laplace_p2, stats.laplace.pdf(laplace_p2, loc_laplace_p2,scale_laplace_p2), lw=2, label='Laplace Distribution')
-'''
-#num_bin = update_num_bins (num_MPC)
 num_bin = 40
 
 
@@ -309,7 +284,7 @@ slider.on_changed(update)
 plt.show()
 
 
-'''#Error calculation
+#Error calculation
 #RMSE
 rmse_weibull2 = calculate_rmse(hist_vals, weibull_p2)
 rmse_normal2 = calculate_rmse(hist_vals, normal_p2)
@@ -342,7 +317,7 @@ print(f"KS-weibull for APDP: {ks_weibull2}, p-Wert for APDP: {p_weibull2}")
 print(f"KS-Normal for APDP: {ks_normal2}, p-Wert for APDP: {p_normal2}")
 print(f"KS-Gamma for APDP: {ks_gamma2}, p-Wert for APDP: {p_gamma2}")
 print(f"KS-Log for APDP: {ks_log2}, p-Wert for APDP: {p_log2}")
-print(f"KS-Laplace for APDP: {ks_laplace2}, p-Wert for APDP: {p_laplace2}")'''
+print(f"KS-Laplace for APDP: {ks_laplace2}, p-Wert for APDP: {p_laplace2}")
 
 
 

@@ -1,6 +1,6 @@
 streamlit
-numpy
-scipy
-matplotlib
-plotly
+numpy==1.23.4
+scipy==1.9.3
+matplotlib==3.6.2
+streamlit==1.22.0
 

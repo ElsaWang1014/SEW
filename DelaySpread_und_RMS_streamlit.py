@@ -39,8 +39,6 @@ def compute_apdp_and_peaks(data, num_milliseconds):
         apdp = np.mean(data[:, :, ms], axis=0)
         apdp_db = 10 * np.log10(apdp)
 
-        '''max_index = np.argmax(apdp_db)
-        apdp_db_after_max = apdp_db[max_index:]'''
 
         min_height = np.max(apdp_db[200:]) + 3
         peaks, _ = find_peaks(apdp_db, height=min_height, prominence=(0.1, None))

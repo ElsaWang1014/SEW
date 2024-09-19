@@ -1,2 +1,2 @@
-web: gunicorn DelaySpread_und_RMS:app
+web: streamlit run DelaySpread_und_RMS_streamlit.py
 

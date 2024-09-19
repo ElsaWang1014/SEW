@@ -64,9 +64,7 @@ data = np.concatenate(data, axis=2)
 c_licht = 3e8
 v = 0.6
 f_c = 3.75e9  #Hz
-#Doppler shift
-f_m = (v * f_c) / c_licht 
-T_c = 1 / f_m
+T_c = (9 * c_licht) / (16 * math.pi *f_c*v)
 print(f"Coherence Time: {T_c} s")
 
 

@@ -7,11 +7,11 @@ import os
 import DelaySpread_und_RMS
 from scipy.optimize import curve_fit
 from scipy.signal import find_peaks
-from scipy.stats import weibull_min, norm, gamma, laplace,kstest
+from scipy.stats import weibull_min, norm, gamma, laplace
 from sklearn.metrics import mean_squared_error
 from matplotlib.widgets import Slider
 import pandas as pd
-import tensorflow as tf
+#import tensorflow as tf
 
 #print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
@@ -104,7 +104,7 @@ def update_num_bins(val, resolution=3):
     num_bins = len(edges) - 1  
     
     adjusted_num_bins = int(num_bins * resolution)
-    print (f"bins:{adjusted_num_bins}")
+    #print (f"bins:{adjusted_num_bins}")
     return adjusted_num_bins
 
 
@@ -125,18 +125,18 @@ def CDF (val):
 
 
 def Weibull (val):
-    num_MPC = np.ravel(num_MPC)
+    val = np.ravel(val)
     shape, loc, scale = weibull_min.fit(val, floc=0)
     bin_no = num_bin
     data_entries, bins = np.histogram(val, bin_no)
     bincenters = np.array([0.5 * (bins[i] + bins[i + 1]) for i in range(len(bins) - 1)])
     pdf = weibull_min.pdf(bincenters, shape, loc=loc, scale=scale)
-    cdf = weibull_min.cdf(bincenters, shape, loc=loc, scale=scale)
+    #cdf = weibull_min.cdf(bincenters, shape, loc=loc, scale=scale)
 
-    return pdf, cdf, bincenters
+    return pdf,  bincenters
 
 def Normal (val):
-   
+    val = np.ravel(val)
     mu, std = stats.norm.fit(val)
     num_bins = int(num_bin)
     x = np.linspace(min(val), max(val), num_bins)
@@ -222,7 +222,7 @@ plt.plot(log_p2, stats.lognorm.pdf(log_p2, shape_log_p2, loc_log_p2, scale_log_p
 plt.plot(laplace_p2, stats.laplace.pdf(laplace_p2, loc_laplace_p2,scale_laplace_p2), lw=2, label='Laplace Distribution')
 '''
 #num_bin = update_num_bins (num_MPC)
-
+num_bin = 40
 
 
 # update 
@@ -237,11 +237,11 @@ def update(val):
 
     
     # Fit the updated data
-    weibull_pdf, x_vals_wb = Weibull(num_MPC)
-    normal_pdf, x_vals_n = Normal(num_MPC)
-    gamma_pdf, x_vals_g = gamma_function(num_MPC)
-    lognorm_pdf, x_vals_ln = log(num_MPC)
-    laplace_pdf, x_vals_lp = laplace_function(num_MPC)
+    weibull_pdf, x_vals_wb = Weibull(num_MPC_sec)
+    normal_pdf, x_vals_n = Normal(num_MPC_sec)
+    gamma_pdf, x_vals_g = gamma_function(num_MPC_sec)
+    lognorm_pdf, x_vals_ln = log(num_MPC_sec)
+    laplace_pdf, x_vals_lp = laplace_function(num_MPC_sec)
 
 
     # Plot the fitting curves

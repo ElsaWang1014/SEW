@@ -6,11 +6,11 @@ import json
 from datetime import datetime
 import pandas as pd
 
-load_path = "/media/student/SEW/Bearbeitet_Data/Rx2/Tag2_Scenario3_Besondermessungen"
+load_path = "/media/student/SEW/Bearbeitet_Data/Rx3/Tag1_Scenario1_Normal"
 
-rx_index = 2
-scenario_index = 3
-round_numbers = [243,244,245,246,247,248,250,251,252,253,254,257,258,259,260,261,262,264,265,266]
+rx_index = 3
+scenario_index = 1
+round_numbers = [1,2,3,4,5,6,7,8,9,10,12,13,17,18,19,20]
 seconds = []
 data_by_seconds = {}
 
@@ -32,7 +32,7 @@ for round_number in round_numbers:
     for second in seconds:
         for rf_index in [0, 1]:
         ############    cirs and linspetrum    #############################################################################
-            filename = f"Round_{round_number}_AP_2_RF_{rf_index}_Sec_{second}.mat"
+            filename = f"Round_{round_number}_AP_1_RF_{rf_index}_Sec_{second}.mat"
             full_filename = os.path.join(load_path, filename)
             
             if os.path.exists(full_filename):

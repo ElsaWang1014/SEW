@@ -64,8 +64,10 @@ data = np.concatenate(data, axis=2)
 c_licht = 3e8
 v = 0.6
 f_c = 3.75e9  #Hz
-T_c = (9 * c_licht) / (16 * math.pi *f_c*v)
+T_c = (9 * c_licht) / (16 * math.pi *f_c * v )
 print(f"Coherence Time: {T_c} s")
+co_time = round(T_c * 1e3) 
+print(f"Coherence Time: {co_time} ms")
 
 
 # Sampling interval (in seconds)
@@ -81,11 +83,10 @@ delays = delays - 10e-9
 #Parameters
 num_milliseconds = data.shape[2]
 #print(f"num_milliseconds:{data.shape[2]}")
-APDP_db_all = []
+APDP_ms = []
+#APDP_db_all = []
 all_peaks_all = []
-
 rms_delay_spread_2_array = np.zeros(num_milliseconds)
-
 co_bandwidth_2 = np.zeros(num_milliseconds)
 all_peaks = np.zeros(num_delays*num_milliseconds)
 
@@ -93,49 +94,62 @@ all_peaks = np.zeros(num_delays*num_milliseconds)
 
 
 #for s in [s for r, s in seconds if r == round_number]:
-for ms in range(num_milliseconds):
-        APDP_1 = np.zeros(num_delays)
-        for i in range(num_delays):
-          #print(num_delays)
+for ms in range(0, num_milliseconds, co_time):
+        APDP_power = []
+        delays_time = []
+        for time in  range(ms , min (ms + co_time,num_milliseconds)):
+          APDP_1 = np.zeros(num_delays)
+          for i in range(num_delays):
+            #print(num_delays)
 
-        # Calculate APDP
+          # Calculate APDP
 
-          APDP_1[i] = np.mean(data[:,  i, ms], axis=0)  #  APDP for all delay position in a certain ms 
+            APDP_1[i] = np.mean(data[:,  i, time], axis=0)  #  APDP for all delay position in a certain ms 
           #print (f"apdp 1:{APDP.shape}")
-        
-        #print (f"apdp:{APDP.shape}")
+          APDP_mean = np.mean(APDP_1)
+          APDP_db = 10 * np.log10(APDP_mean)
+          APDP_power.append(APDP_db)
+          
 
-        APDP_db = 10 * np.log10(APDP_1)
+        mean_APDP_time = np.mean(APDP_power)
+        APDP_ms.append(mean_APDP_time)
+        
+        APDP_db_all = np.array (APDP_ms)
+        #print(f"APDP_db_all content: {APDP_db_all}")
+        delays = np.array(len(APDP_power))
+
         #print (f"apdp DB:{APDP_db.shape}")
-        #peaks
-        max_index = np.argmax(APDP_db)
-        #print (f"max index :{max_index}")
-        APDP_db_after_max = APDP_db[max_index:]
+
+#peaks
+
+max_index = np.argmax(APDP_db_all)
+#print (f"max index :{max_index}")
+APDP_db_after_max = APDP_db_all[max_index:]
                 
-        min_height_2 = np.max(APDP_db[200:]) + 3
-        peaks_2, peak_heights_2 = find_peaks(APDP_db_after_max, height = min_height_2, prominence = (0.1, None))
-        peaks_2 = peaks_2 + max_index
-        all_peaks = np.append(peaks_2, max_index)
-        all_peaks = np.sort(all_peaks)
-        APDP_db_all.append(APDP_db)
-        all_peaks_all.append(all_peaks)
+min_height_2 = np.max(APDP_db_all[200:]) + 3
+peaks_2, peak_heights_2 = find_peaks(APDP_db_after_max, height = min_height_2, prominence = (0.1, None))
+peaks_2 = peaks_2 + max_index
+all_peaks = np.append(peaks_2, max_index)
+all_peaks = np.sort(all_peaks)
+        
+all_peaks_all.append(all_peaks)
         #print(np.mean(APDP_db[200:]))
 
 
         
         # Calculate RMS Delay Spread (von Frank)
-
-        total_power = np.sum(APDP_1[0:200])
-        time_weighted_power = np.sum(delays[0:200] * APDP_1[0:200])
+for ms in range(0, num_milliseconds, co_time):
+        total_power = np.sum(mean_APDP_time)
+        time_weighted_power = np.sum(delays * mean_APDP_time)
         tau_bar = time_weighted_power / total_power
-        squared_delays = (delays[0:200] - tau_bar)**2
-        rms_delay_spread_2 = np.sqrt(np.sum(squared_delays*APDP_1[0:200]) / total_power)
+        squared_delays = (delays - tau_bar)**2
+        rms_delay_spread_2 = np.sqrt(np.sum(squared_delays*mean_APDP_time) / total_power)
         rms_delay_spread_2_array[ms] = rms_delay_spread_2 
                 #print(rms_delay_spread_2)
                 #print(f'Round {round_number}: RMS Delay Spread: {rms_delay_spread_2*1e6} us')
   
-        co_bandwidth_2[ms] = 1 / (2 * math.pi * rms_delay_spread_2)
-                #print(f'Round {round_number}: coherence Banwidth: {co_bandwidth_2} ')
+        co_bandwidth_2[ms] = 1 / (2 * math.pi * rms_delay_spread_2)        
+                #print(f'Round {round_number}: coherence Banwidth: {co_bandwidth_2} '        )
 
 
 '''print (f"peaks shape: {len(all_peaks_all)}")
@@ -149,10 +163,10 @@ plt.subplots_adjust(left=0.1, bottom=0.25)
 
 # Initial plot
 current_ms = 0
-APDP_db = APDP_db_all[current_ms]
+APDP_db = APDP_ms[current_ms]
 peaks = all_peaks_all[current_ms]
-line, = ax.plot(delays * 1e9, APDP_db, label='APDP (dB)')
-peaks_plot, = ax.plot(delays[peaks] * 1e9, APDP_db[peaks], 'rx', label='Peaks')
+line, = ax.plot(delays * 1e9, mean_APDP_time, label='APDP (dB)')
+peaks_plot, = ax.plot(delays[peaks] * 1e9, APDP_db_all[peaks], 'rx', label='Peaks')
 ax.set_xlabel("Delay Time (ns)")
 ax.set_ylabel("APDP (dB)")
 ax.set_title(f"APDP for Rounds {round_numbers} at Millisecond {current_ms}")
@@ -161,15 +175,15 @@ ax.grid(True)
 
 # Slider
 ax_slider = plt.axes([0.2, 0.1, 0.65, 0.03], facecolor='lightgoldenrodyellow')
-slider = Slider(ax_slider, 'Millisecond', 1, num_milliseconds , valinit=current_ms, valfmt='%d ms')
+slider = Slider(ax_slider, 'Millisecond', 1, num_milliseconds // co_time , valinit=current_ms, valfmt='%d ms')
 
 def update(val):
     ms = int(slider.val)
-    APDP_db = APDP_db_all[ms]
+    APDP_db = APDP_ms[ms]
     peaks = all_peaks_all[ms]
     line.set_ydata(APDP_db)
     peaks_plot.set_xdata(delays[peaks] * 1e9)
-    peaks_plot.set_ydata(APDP_db[peaks])
+    peaks_plot.set_ydata(mean_APDP_time[peaks])
     ax.relim()
     ax.autoscale_view()
     ax.set_title(f"APDP for Rounds {round_numbers} at Millisecond {ms}")

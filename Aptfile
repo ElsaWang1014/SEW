@@ -1,5 +1,0 @@
-build-essential
-libxml2-dev
-libxslt-dev
-libffi-dev
-libdbus-1-dev

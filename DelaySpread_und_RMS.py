@@ -108,7 +108,7 @@ co_bandwidth_1 = np.zeros(number_1)
 co_bandwidth_2 = np.zeros(number_2)
 all_peaks = np.zeros(num_delays*num_milliseconds)
 
-# Calculate the APDP
+'''# Calculate the APDP
 
 for ms in range(0, num_milliseconds):
     APDP_1 = np.zeros(num_delays)
@@ -133,14 +133,18 @@ def  APDP_with_coherence_time(data, co_time, num_delays, number):
   APDP_power = 10 * np.log10(mean_APDP_time)
   APDP_db_all =  APDP_power
 
-  power_filename = f'Power_of_APDP_of_every_{co_time}.npy'
-  np.save (power_filename,APDP_db_all)
-
-  # Calculate the number of milliseconds
+   # Calculate the number of milliseconds
   num_ms = APDP_db_all.shape[1]
 
   # Calculate the ms_final array
   ms_final = np.arange(num_ms) * sampling_interval
+
+  power_filename = f'Power_of_APDP_of_every_{co_time}.npy'
+  MS_filename = f'ms_of_every_{co_time}.npy'
+  np.save (power_filename,APDP_db_all)
+  np.save (MS_filename,ms_final)
+
+ 
 
   # Return APDP_db_all and ms_final
   return mean_APDP_time, APDP_db_all, ms_final
@@ -257,9 +261,17 @@ rms_delay_spread_array_2 ,co_bandwidth_2  =  calculate_rms_delay_spread(mean_APD
 
 #plot_apdp_with_slider(APDP_db_all_1, all_peaks_all_1, ms_final_1, co_time_1, round_numbers)
 #plot_apdp_with_slider(APDP_db_all_2, all_peaks_all_2, ms_final_2, co_time_2, round_numbers)
+'''
 
 #Figure
-
+APDP_db_all_1 = np.load('Power_of_APDP_of_every_24.npy')
+APDP_db_all_2 = np.load('Power_of_APDP_of_every_133.npy')
+ms_final_1 = np.load('ms_of_every_24.npy')
+ms_final_2 = np.load('ms_of_every_133.npy')
+with open('all_peaks_for_every_24.pkl', 'rb') as file:
+    all_peaks_all_1 = pickle.load(file)
+with open('all_peaks_for_every_133.pkl', 'rb') as file:
+    all_peaks_all_2 = pickle.load(file)
 # Create the first figure and slider
 fig1, ax1 = plt.subplots(figsize=(20, 6))
 plt.subplots_adjust(left=0.1, bottom=0.25)
@@ -330,10 +342,8 @@ def update2(val):
 
 slider2.on_changed(update2)
 
-#rms_delay_spread_1_array = np.load('rms_delay_spread_of_every_ms.npy')
-#print(rms_delay_spread_1_array.shape)
-#print(rms_delay_spread_1_array)
 
+rms_delay_spread_array = np.load('rms_delay_spread_of_every_1000_ms.npy')
 plt.figure(figsize=(20, 6))
 plt.plot(rms_delay_spread_array * 1e9, label='RMS Delay Spread (jede ms)')
 plt.xlabel("Time (milliseconds)")
@@ -342,7 +352,7 @@ plt.title("RMS Delay Spread every ms over Time")
 plt.legend()
 plt.grid(True)
 
-#rms_delay_spread_2_array = np.load('rms_delay_spread_of_every_24_ms.npy')
+rms_delay_spread_array_1 = np.load('rms_delay_spread_of_every_24_ms.npy')
 plt.figure(figsize=(20, 6))
 plt.plot(rms_delay_spread_array_1 * 1e9, label='RMS Delay Spread (jede 24ms)')
 plt.xlabel("Time (milliseconds)")
@@ -351,6 +361,7 @@ plt.title("RMS Delay Spread every 24 ms over Time")
 plt.legend()
 plt.grid(True)
 
+rms_delay_spread_array_2 = np.load('rms_delay_spread_of_every_133_ms.npy')
 plt.figure(figsize=(20, 6))
 plt.plot(rms_delay_spread_array_2 * 1e9, label='RMS Delay Spread (jede 133ms)')
 plt.xlabel("Time (milliseconds)")

@@ -24,7 +24,7 @@ def load_data(load_path, round_numbers, num_seconds=25):
         data.append(second_data)
     
     data = np.array(data)
-    data = np.concatenate(data, axis=2)
+    #data = np.concatenate(data, axis=1)
     return data
 
 # APDP  &  RMS DS

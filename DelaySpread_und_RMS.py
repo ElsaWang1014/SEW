@@ -1,3 +1,4 @@
+#%%
 import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +15,7 @@ load_path = "/media/student/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_AGVHorizontal
 #load_path = "/media/student/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_Langzeitmessungen/"
 
 #wechselbar
-#round_numbers = [22]#,26,30,35,38]
+#round_numbers = [22]#,26,30,35,38
 round_numbers = [77,78,79,80,81,82]
 seconds = []
 #RF_index = 0
@@ -107,6 +108,102 @@ co_bandwidth = np.zeros(num_milliseconds)
 co_bandwidth_1 = np.zeros(number_1)
 co_bandwidth_2 = np.zeros(number_2)
 all_peaks = np.zeros(num_delays*num_milliseconds)
+
+
+
+#Figure
+APDP_db_all_1 = np.load('Power_of_APDP_of_every_24.npy')
+APDP_db_all_2 = np.load('Power_of_APDP_of_every_133.npy')
+ms_final_1 = np.load('ms_of_every_24.npy')
+ms_final_2 = np.load('ms_of_every_133.npy')
+with open('all_peaks_for_every_24.pkl', 'rb') as file:
+    all_peaks_all_1 = pickle.load(file)
+with open('all_peaks_for_every_133.pkl', 'rb') as file:
+    all_peaks_all_2 = pickle.load(file)
+
+#%%
+def plot_apdp_with_slider(data, peaks_all, ms_delay, co_time, round_numbers):
+    # Create figure and axis
+    
+    fig, ax = plt.subplots(figsize=(20, 6))
+    plt.subplots_adjust(left=0.1, bottom=0.25)
+    
+    # Initial plot
+    current_index = 0
+    #APDP_db = data[current_index]
+    peaks = peaks_all[current_index]
+    
+    # Plot the APDP (dB) line and peaks
+    line, = ax.plot(ms_delay * 1e9, data[current_index], label='APDP (dB)')
+    peaks_plot, = ax.plot(ms_delay[peaks] * 1e9, data[current_index, peaks], 'rx', label='Peaks')
+
+    # Set labels and title
+    ax.set_xlabel("Delay Time (ns)")
+    ax.set_ylabel("APDP (dB)")
+    ax.set_title(f"APDP for Rounds {round_numbers} from {current_index * co_time} ms to {current_index * co_time + co_time} ms")
+    ax.legend()
+    ax.grid(True)
+
+    # Create a slider
+    ax_slider = plt.axes([0.2, 0.1, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+    slider = Slider(ax_slider, 'Millisecond', 1, len(data) , valinit=1, valfmt='%d.th')
+    
+    # Update function for the slider
+    def update(val):
+        index = int(slider.val) - 1
+        #APDP_db = data[index]
+        peaks = peaks_all[index]
+        
+        # Update the plot data
+        line.set_ydata(data[index, :])
+        peaks_plot.set_xdata(ms_delay[peaks] * 1e9)
+        peaks_plot.set_ydata(data[index, peaks])
+        
+        # Rescale and redraw
+        
+        ax.set_title(f"APDP for Rounds {round_numbers} from {index * co_time} ms to {index * co_time + co_time} ms")
+        ax.relim()
+        ax.autoscale_view()
+        fig.canvas.draw_idle()
+
+    # Connect slider to the update function
+    slider.on_changed(update)
+    #interact(update);
+    
+plot_apdp_with_slider(APDP_db_all_1, all_peaks_all_1, ms_final_1, co_time_1, round_numbers)
+plot_apdp_with_slider(APDP_db_all_2, all_peaks_all_2, ms_final_2, co_time_2, round_numbers)
+
+
+rms_delay_spread_array = np.load('rms_delay_spread_of_every_1000_ms.npy')
+plt.figure(figsize=(20, 6))
+plt.plot(rms_delay_spread_array * 1e9, label='RMS Delay Spread (jede ms)')
+plt.xlabel("Time (milliseconds)")
+plt.ylabel("RMS Delay Spread (ns)")
+plt.title("RMS Delay Spread every ms over Time")
+plt.legend()
+plt.grid(True)
+
+rms_delay_spread_array_1 = np.load('rms_delay_spread_of_every_24_ms.npy')
+plt.figure(figsize=(20, 6))
+plt.plot(rms_delay_spread_array_1 * 1e9, label='RMS Delay Spread (jede 24ms)')
+plt.xlabel("Time (milliseconds)")
+plt.ylabel("RMS Delay Spread (ns)")
+plt.title("RMS Delay Spread every 24 ms over Time")
+plt.legend()
+plt.grid(True)
+
+rms_delay_spread_array_2 = np.load('rms_delay_spread_of_every_133_ms.npy')
+plt.figure(figsize=(20, 6))
+plt.plot(rms_delay_spread_array_2 * 1e9, label='RMS Delay Spread (jede 133ms)')
+plt.xlabel("Time (milliseconds)")
+plt.ylabel("RMS Delay Spread (ns)")
+plt.title("RMS Delay Spread every 133 ms over Time")
+plt.legend()
+plt.grid(True)
+
+plt.show()
+
+
 
 '''# Calculate the APDP
 
@@ -247,6 +344,7 @@ def plot_apdp_with_slider(data, peaks_all, ms_delay, co_time, round_numbers):
 
     # Connect slider to the update function
     slider.on_changed(update)
+    plt.show()
 
 #Results
 mean_APDP_time_1,APDP_db_all_1 , ms_final_1 = APDP_with_coherence_time(APDP_ms,co_time_1,num_delays,number_1)
@@ -263,160 +361,7 @@ rms_delay_spread_array_2 ,co_bandwidth_2  =  calculate_rms_delay_spread(mean_APD
 #plot_apdp_with_slider(APDP_db_all_2, all_peaks_all_2, ms_final_2, co_time_2, round_numbers)
 '''
 
-#Figure
-APDP_db_all_1 = np.load('Power_of_APDP_of_every_24.npy')
-APDP_db_all_2 = np.load('Power_of_APDP_of_every_133.npy')
-ms_final_1 = np.load('ms_of_every_24.npy')
-ms_final_2 = np.load('ms_of_every_133.npy')
-with open('all_peaks_for_every_24.pkl', 'rb') as file:
-    all_peaks_all_1 = pickle.load(file)
-with open('all_peaks_for_every_133.pkl', 'rb') as file:
-    all_peaks_all_2 = pickle.load(file)
-# Create the first figure and slider
-fig1, ax1 = plt.subplots(figsize=(20, 6))
-plt.subplots_adjust(left=0.1, bottom=0.25)
 
-# Initial plotting for the first dataset
-current_index_1 = 0  # Start from the first index
-APDP_db_1 = APDP_db_all_1[current_index_1]
-peaks_1 = all_peaks_all_1[current_index_1]
-line1, = ax1.plot(ms_final_1, APDP_db_1, label='APDP 1 (dB)')
-peaks_plot1, = ax1.plot(ms_final_1[peaks_1], APDP_db_1[peaks_1], 'rx', label='Peaks 1')
-ax1.set_xlabel("Delay Time (ns)")
-ax1.set_ylabel("APDP 1 (dB)")
-ax1.set_title(f"APDP 1 for Rounds {round_numbers} from {current_index_1 * co_time_1} ms to {current_index_1 * co_time_1 + co_time_1} ms")
-ax1.legend()
-ax1.grid(True)
-
-# Slider for the first figure
-ax_slider1 = plt.axes([0.2, 0.1, 0.65, 0.03], facecolor='lightgoldenrodyellow')
-slider1 = Slider(ax_slider1, 'Milliseconds', 1, len(APDP_db_all_1), valinit=1, valfmt='%d.th 24 ms')
-
-# Update function for the first figure
-def update1(val):
-    index = int(slider1.val) - 1  # Convert slider value to zero-based index
-    APDP_db_1 = APDP_db_all_1[index]
-    peaks_1 = all_peaks_all_1[index]
-    line1.set_ydata(APDP_db_1)
-    peaks_plot1.set_xdata(ms_final_1[peaks_1])
-    peaks_plot1.set_ydata(APDP_db_1[peaks_1])
-    ax1.relim()
-    ax1.autoscale_view()
-    ax1.set_title(f"APDP 1 for Rounds {round_numbers} from {index * co_time_1} ms to {index * co_time_1 + co_time_1} ms")
-    fig1.canvas.draw_idle()  # Refresh the figure
-
-slider1.on_changed(update1)
-
-# Create the second figure and slider
-fig2, ax2 = plt.subplots(figsize=(20, 6))
-plt.subplots_adjust(left=0.1, bottom=0.25)
-
-# Initial plotting for the second dataset
-current_index_2 = 0  # Start from the first index
-APDP_db_2 = APDP_db_all_2[current_index_2]
-peaks_2 = all_peaks_all_2[current_index_2]
-line2, = ax2.plot(ms_final_2, APDP_db_2, label='APDP 2 (dB)')
-peaks_plot2, = ax2.plot(ms_final_2[peaks_2], APDP_db_2[peaks_2], 'rx', label='Peaks 2')
-ax2.set_xlabel("Delay Time (ns)")
-ax2.set_ylabel("APDP 2 (dB)")
-ax2.set_title(f"APDP 2 for Rounds {round_numbers} from {current_index_2 * co_time_2} ms to {current_index_2 * co_time_2 + co_time_2} ms")
-ax2.legend()
-ax2.grid(True)
-
-# Slider for the second figure
-ax_slider2 = plt.axes([0.2, 0.1, 0.65, 0.03], facecolor='lightgoldenrodyellow')
-slider2 = Slider(ax_slider2, 'Milliseconds', 1, len(APDP_db_all_2), valinit=1, valfmt='%d.th 133 ms')
-
-# Update function for the second figure
-def update2(val):
-    index = int(slider2.val) - 1  # Convert slider value to zero-based index
-    APDP_db_2 = APDP_db_all_2[index]
-    peaks_2 = all_peaks_all_2[index]
-    line2.set_ydata(APDP_db_2)
-    peaks_plot2.set_xdata(ms_final_2[peaks_2])
-    peaks_plot2.set_ydata(APDP_db_2[peaks_2])
-    ax2.relim()
-    ax2.autoscale_view()
-    ax2.set_title(f"APDP 2 for Rounds {round_numbers} from {index * co_time_2} ms to {index * co_time_2 + co_time_2} ms")
-    fig2.canvas.draw_idle()  # Refresh the figure
-
-slider2.on_changed(update2)
-
-
-rms_delay_spread_array = np.load('rms_delay_spread_of_every_1000_ms.npy')
-plt.figure(figsize=(20, 6))
-plt.plot(rms_delay_spread_array * 1e9, label='RMS Delay Spread (jede ms)')
-plt.xlabel("Time (milliseconds)")
-plt.ylabel("RMS Delay Spread (ns)")
-plt.title("RMS Delay Spread every ms over Time")
-plt.legend()
-plt.grid(True)
-
-rms_delay_spread_array_1 = np.load('rms_delay_spread_of_every_24_ms.npy')
-plt.figure(figsize=(20, 6))
-plt.plot(rms_delay_spread_array_1 * 1e9, label='RMS Delay Spread (jede 24ms)')
-plt.xlabel("Time (milliseconds)")
-plt.ylabel("RMS Delay Spread (ns)")
-plt.title("RMS Delay Spread every 24 ms over Time")
-plt.legend()
-plt.grid(True)
-
-rms_delay_spread_array_2 = np.load('rms_delay_spread_of_every_133_ms.npy')
-plt.figure(figsize=(20, 6))
-plt.plot(rms_delay_spread_array_2 * 1e9, label='RMS Delay Spread (jede 133ms)')
-plt.xlabel("Time (milliseconds)")
-plt.ylabel("RMS Delay Spread (ns)")
-plt.title("RMS Delay Spread every 133 ms over Time")
-plt.legend()
-plt.grid(True)
-
-plt.show()
-
-
-
-
-'''#for co_bandwidth_1 24ms
-new_APDP_1[:num_milliseconds,:] = APDP_ms
-reshaped_APDP_1 = new_APDP_1.reshape( number_1, co_time_1 ,num_delays)
-mean_APDP_time_1 = reshaped_APDP_1.mean(axis=1)
-APDP_power_1 = 10 * np.log10(mean_APDP_time_1)
-APDP_db_all_1 =  APDP_power_1
-
-np.save ('Power_of_APDP_of_every_ms',APDP_power_1)
-np.save ('Power_of_APDP_of_every_24_ms',APDP_db_all_1)
-
-
-#for co_bandwidth_2  133ms
-new_APDP_2[:num_milliseconds,:] = APDP_ms
-reshaped_APDP_2 = new_APDP_2.reshape( number_2, co_time_2 ,num_delays)
-mean_APDP_time_2 = reshaped_APDP_2.mean(axis=1)
-APDP_power_2 = 10 * np.log10(mean_APDP_time_2)
-APDP_db_all_2 =  APDP_power_2
-print(mean_APDP_time_2.shape)
-#print(APDP_db_all) 
-#print(f"APDP_db_all shape: {APDP_db_all.shape}")
-
-np.save ('Power_of_APDP_of_every_ms',APDP_power_2)
-np.save ('Power_of_APDP_of_every_24_ms',APDP_db_all_2)'''
-
-
-'''#peaks for every 24 ms
-for index in range(len(APDP_db_all)):
-  current_segment = APDP_db_all[index]
-  max_index = np.argmax(current_segment)
-  APDP_db_after_max = current_segment[max_index +1:] 
-                  
-  min_height_2 = np.max(APDP_db_all[:,200:]) + 3
-  peaks_2, peak_heights_2 = find_peaks(APDP_db_after_max, height = min_height_2, prominence = (0.1, None))
-  peaks_2 = peaks_2 + max_index +1
-  all_peaks = np.append(peaks_2, max_index)
-  all_peaks = np.sort(all_peaks)
-          
-  all_peaks_all.append(all_peaks)
-  #print(all_peaks.shape)
-with open('all_peaks_for_every_24_ms.pkl', 'wb') as f:
-    pickle.dump(all_peaks_all, f)
-'''
 
 '''
 num_ms_1 = APDP_db_all_1.shape[1]
@@ -607,4 +552,75 @@ def update(val):
     fig.canvas.draw_idle()
 
 slider.on_changed(update)
+'''
+
+'''# Create the first figure and slider
+fig1, ax1 = plt.subplots(figsize=(20, 6))
+plt.subplots_adjust(left=0.1, bottom=0.25)
+
+# Initial plotting for the first dataset
+current_index_1 = 0  # Start from the first index
+APDP_db_1 = APDP_db_all_1[current_index_1]
+peaks_1 = all_peaks_all_1[current_index_1]
+line1, = ax1.plot(ms_final_1, APDP_db_1, label='APDP 1 (dB)')
+peaks_plot1, = ax1.plot(ms_final_1[peaks_1], APDP_db_1[peaks_1], 'rx', label='Peaks 1')
+ax1.set_xlabel("Delay Time (ns)")
+ax1.set_ylabel("APDP 1 (dB)")
+ax1.set_title(f"APDP 1 for Rounds {round_numbers} from {current_index_1 * co_time_1} ms to {current_index_1 * co_time_1 + co_time_1} ms")
+ax1.legend()
+ax1.grid(True)
+
+# Slider for the first figure
+ax_slider1 = plt.axes([0.2, 0.1, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+slider1 = Slider(ax_slider1, 'Milliseconds', 1, len(APDP_db_all_1), valinit=1, valfmt='%d.th 24 ms')
+
+# Update function for the first figure
+def update1(val):
+    index = int(slider1.val) - 1  # Convert slider value to zero-based index
+    APDP_db_1 = APDP_db_all_1[index]
+    peaks_1 = all_peaks_all_1[index]
+    line1.set_ydata(APDP_db_1)
+    peaks_plot1.set_xdata(ms_final_1[peaks_1])
+    peaks_plot1.set_ydata(APDP_db_1[peaks_1])
+    ax1.relim()
+    ax1.autoscale_view()
+    ax1.set_title(f"APDP 1 for Rounds {round_numbers} from {index * co_time_1} ms to {index * co_time_1 + co_time_1} ms")
+    fig1.canvas.draw_idle()  # Refresh the figure
+
+slider1.on_changed(update1)
+
+# Create the second figure and slider
+fig2, ax2 = plt.subplots(figsize=(20, 6))
+plt.subplots_adjust(left=0.1, bottom=0.25)
+
+# Initial plotting for the second dataset
+current_index_2 = 0  # Start from the first index
+APDP_db_2 = APDP_db_all_2[current_index_2]
+peaks_2 = all_peaks_all_2[current_index_2]
+line2, = ax2.plot(ms_final_2, APDP_db_2, label='APDP 2 (dB)')
+peaks_plot2, = ax2.plot(ms_final_2[peaks_2], APDP_db_2[peaks_2], 'rx', label='Peaks 2')
+ax2.set_xlabel("Delay Time (ns)")
+ax2.set_ylabel("APDP 2 (dB)")
+ax2.set_title(f"APDP 2 for Rounds {round_numbers} from {current_index_2 * co_time_2} ms to {current_index_2 * co_time_2 + co_time_2} ms")
+ax2.legend()
+ax2.grid(True)
+
+# Slider for the second figure
+ax_slider2 = plt.axes([0.2, 0.1, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+slider2 = Slider(ax_slider2, 'Milliseconds', 1, len(APDP_db_all_2), valinit=1, valfmt='%d.th 133 ms')
+
+# Update function for the second figure
+def update2(val):
+    index = int(slider2.val) - 1  # Convert slider value to zero-based index
+    APDP_db_2 = APDP_db_all_2[index]
+    peaks_2 = all_peaks_all_2[index]
+    line2.set_ydata(APDP_db_2)
+    peaks_plot2.set_xdata(ms_final_2[peaks_2])
+    peaks_plot2.set_ydata(APDP_db_2[peaks_2])
+    ax2.relim()
+    ax2.autoscale_view()
+    ax2.set_title(f"APDP 2 for Rounds {round_numbers} from {index * co_time_2} ms to {index * co_time_2 + co_time_2} ms")
+    fig2.canvas.draw_idle()  # Refresh the figure
+
+slider2.on_changed(update2)
 '''

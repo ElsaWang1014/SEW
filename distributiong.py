@@ -1,3 +1,5 @@
+#%%
+
 from matplotlib.pylab import norm
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,8 +13,6 @@ from scipy.stats import weibull_min, norm, gamma, laplace
 from sklearn.metrics import mean_squared_error
 import pickle
 
-
-#print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
 #Data 
 data_flat = DelaySpread_und_RMS.data.flatten()
@@ -111,9 +111,9 @@ def CDF_1 (val):
 num_bin = 15
 num_MPC = [len(peaks) for peaks in peaks] 
 
-fig, ax = plt.subplots(figsize=(10, 6))
+plt.figure(figsize=(10, 6))
 plt.subplots_adjust(left=0.1, bottom=0.25)
-hist_vals, bins, patches= ax.hist(num_MPC, bins=num_bin, density=True,label='Histogram')
+hist_vals, bins, patches= plt.hist(num_MPC, bins=num_bin, density=True,alpha=0.7, color='gray',label='Histogram')
 # Fit the updated data
 weibull_pdf, x_vals_wb, cdf_weibull, = Weibull(num_MPC,num_bin)
 normal_pdf, x_vals_n,cdf_normal = Normal(num_MPC,num_bin)
@@ -123,18 +123,18 @@ laplace_pdf, x_vals_lp,cdf_laplace = laplace_function(num_MPC,num_bin)
 
 bin_centers = 0.5 * (bins[1:] + bins[:-1])
     # Plot the fitting curves
-weibull_line, = ax.plot(x_vals_wb, weibull_pdf, 'r-', lw=2, alpha=0.6, label='Weibull PDF')
-normal_line, = ax.plot(x_vals_n, normal_pdf, 'g-', lw=2, alpha=0.6, label='Normal PDF')
-gamma_line, = ax.plot(x_vals_g, gamma_pdf, 'b-', lw=2, alpha=0.6, label='Gamma PDF')
-lognorm_line, = ax.plot(x_vals_ln, lognorm_pdf, 'm-', lw=2, alpha=0.6, label='Log-normal PDF')
-laplace_line, = ax.plot(x_vals_lp, laplace_pdf, 'c-', lw=2, alpha=0.6, label='Laplace PDF')
+plt.plot(x_vals_wb, weibull_pdf, 'r-', lw=2, alpha=0.4, label='Weibull PDF')
+plt.plot(x_vals_n, normal_pdf, 'g-', lw=2, alpha=0.4, label='Normal PDF')
+plt.plot(x_vals_g, gamma_pdf, 'b-', lw=2, alpha=0.4, label='Gamma PDF')
+plt.plot(x_vals_ln, lognorm_pdf, 'm-', lw=2, alpha=0.3, label='Log-normal PDF')
+plt.plot(x_vals_lp, laplace_pdf, 'c-', lw=2, alpha=0.4, label='Laplace PDF')
 
-ax.set_title(f"MPC Histogram and Fitting")
-ax.set_xlabel('MPC_APDP')
-ax.set_ylabel('PDF')
-ax.legend()
-ax.grid(True)
-
+plt.title(f"MPC Histogram and Fitting")
+plt.xlabel('MPC_APDP')
+plt.ylabel('PDF')
+plt.legend()
+plt.grid(True)
+plt.show()
 
 #Error calculation
 
@@ -145,6 +145,7 @@ rmse_gamma = calculate_rmse(hist_vals, gamma_pdf)
 rmse_lognormal = calculate_rmse(hist_vals, lognorm_pdf)
 rmse_laplace = calculate_rmse(hist_vals, laplace_pdf)
 
+print(f"####### MPC ########")
 print(f'RMSE  Weibull MPC: {rmse_weibull}')
 print(f'RMSE   Normal MPC: {rmse_normal}')
 print(f'RMSE    Gamma MPC: {rmse_gamma}')
@@ -154,42 +155,43 @@ print(f'RMSE Lognormal MPC: {rmse_lognormal}')
 sorted,p_h = CDF_1(num_MPC)
 plt.figure(figsize=(10, 6))
 plt.plot(sorted,p_h, 'k-', lw=2, alpha=0.9, label='PDF')
-plt.plot(bin_centers,cdf_weibull, 'g-', lw=2, alpha=0.4, label='Weibull')
-plt.plot(bin_centers,cdf_normal, 'r-', lw=2, alpha=0.4, label='Normal')
+plt.plot(bin_centers,cdf_weibull, 'r-', lw=2, alpha=0.4, label='Weibull')
+plt.plot(bin_centers,cdf_normal, 'g-', lw=2, alpha=0.4, label='Normal')
 plt.plot(bin_centers,cdf_gamma, 'b-', lw=2, alpha=0.4, label='Gamma')
-plt.plot(bin_centers,cdf_lognormal, 'm-', lw=2, alpha=0.2, label='Log-normal ')
+plt.plot(bin_centers,cdf_lognormal, 'm-', lw=2, alpha=0.3, label='Log-normal ')
 plt.plot(bin_centers,cdf_laplace, 'c-', lw=2, alpha=0.4, label='Laplace ')
 plt.title('CDFs_1 of Fitted Distributions (MPC)')
-plt.xlabel('Value')
+plt.xlabel('Number of Multipath')
 plt.ylabel('Cumulative Probability')
 plt.legend()
 plt.grid(True)
-
+plt.show()
 
 plt.figure(figsize=(10, 6))
 cdf_0 = CDF(num_MPC,num_bin)
 plt.plot(bin_centers, cdf_0, 'k-', lw=2, alpha=0.9, label='Data')
-plt.plot(bin_centers, cdf_weibull, 'g-', lw=2, alpha=0.4, label='Weibull')
-plt.plot(bin_centers, cdf_normal, 'r-', lw=2, alpha=0.4, label='Normal')
+plt.plot(bin_centers, cdf_weibull, 'r-', lw=2, alpha=0.4, label='Weibull')
+plt.plot(bin_centers, cdf_normal, 'g-', lw=2, alpha=0.4, label='Normal')
 plt.plot(bin_centers, cdf_gamma, 'b-', lw=2, alpha=0.4, label='Gamma')
-plt.plot(bin_centers, cdf_lognormal, 'm-', lw=2, alpha=0.2, label='Log-normal ')
+plt.plot(bin_centers, cdf_lognormal, 'm-', lw=2, alpha=0.3, label='Log-normal ')
 plt.plot(bin_centers, cdf_laplace, 'c-', lw=2, alpha=0.4, label='Laplace ')
 
 plt.title('CDFs of Fitted Distributions (MPC)')
-plt.xlabel('Value')
+plt.xlabel('Number of Multipath')
 plt.ylabel('Cumulative Probability')
 plt.legend()
 plt.grid(True)
-
+plt.show()
 
 ################ rms DS Frank   ###############################################################################
 num_bin_1 = 40
 RMS_DS_2 = RMS_DS_2*1e9
 RMS_DS_2 = np.array([RMS_DS_2]).flatten()
 #print (f'RMS DS :{RMS_DS_2}')
-fig, ax = plt.subplots(figsize=(10, 6))
+
+plt.figure(figsize=(10, 6))
 plt.subplots_adjust(left=0.1, bottom=0.25)
-hist_5, bins_5, patches_5= ax.hist(RMS_DS_2, bins=num_bin_1, density=True,label='Histogram')
+hist_5, bins_5, patches_5= plt.hist(RMS_DS_2, bins=num_bin_1, density=True,alpha=0.7, color='gray',label='Histogram')
 bin_centers_5 = 0.5 * (bins_5[1:] + bins_5[:-1])
 #print (f'rms ds:{hist_5}')
 # Fit the updated data
@@ -201,18 +203,18 @@ laplace_5, x_vals_lp_5,cdf_laplace_5 = laplace_function(RMS_DS_2,num_bin_1)
 
 
 # Plot the fitting curves
-weibull_line, = ax.plot(x_vals_wb_5, weibull_5, 'r-', lw=2, alpha=0.6, label='Weibull PDF')
-normal_line, = ax.plot(x_vals_n_5, normal_5, 'g-', lw=2, alpha=0.6, label='Normal PDF')
-#gamma_line, = ax.plot(x_vals_g_5, gamma_5, 'b-', lw=2, alpha=0.6, label='Gamma PDF')
-lognorm_line, = ax.plot(x_vals_ln_5, lognorm_5, 'm-', lw=2, alpha=0.6, label='Log-normal PDF')
-laplace_line, = ax.plot(x_vals_lp_5, laplace_5, 'c-', lw=2, alpha=0.6, label='Laplace PDF')
-
+plt.plot(x_vals_wb_5, weibull_5, 'r-', lw=2, alpha=0.4, label='Weibull PDF')
+plt.plot(x_vals_n_5, normal_5, 'g-', lw=2, alpha=0.4, label='Normal PDF')
+plt.plot(x_vals_g_5, gamma_5, 'b-', lw=2, alpha=0.4, label='Gamma PDF')
+plt.plot(x_vals_ln_5, lognorm_5, 'm-', lw=2, alpha=0.3, label='Log-normal PDF')
+plt.plot(x_vals_lp_5, laplace_5, 'c-', lw=2, alpha=0.4, label='Laplace PDF')
 
 plt.title("Probability of RMS Delay Spread")
 plt.xlabel('RMS DS [us]')
 plt.ylabel('PDF')
 plt.legend()
 plt.grid(True)
+plt.show()
 
 #RMSE
 rmse_weibull_5 = calculate_rmse(hist_5, weibull_5)
@@ -220,7 +222,7 @@ rmse_normal_5 = calculate_rmse(hist_5, normal_5)
 rmse_gamma_5 = calculate_rmse(hist_5, gamma_5)
 rmse_lognormal_5 = calculate_rmse(hist_5, lognorm_5)
 rmse_laplace_5 = calculate_rmse(hist_5, laplace_5)
-
+print(f"####### RMS DS ########")
 print(f'RMSE  Weibull RMS DS: {rmse_weibull_5}')
 print(f'RMSE   Normal RMS DS: {rmse_normal_5}')
 print(f'RMSE    Gamma RMS DS: {rmse_gamma_5}')
@@ -231,17 +233,17 @@ print(f'RMSE  Laplace RMS DS: {rmse_laplace_5}')
 sorted_5,p_h_5 = CDF_1(RMS_DS_2)
 plt.figure(figsize=(10, 6))
 plt.plot(sorted_5,p_h_5, 'k-', lw=2, alpha=0.9, label='PDF')
-plt.plot(bin_centers_5,cdf_weibull_5, 'g-', lw=2, alpha=0.4, label='Weibull')
-plt.plot(bin_centers_5,cdf_normal_5, 'r-', lw=2, alpha=0.4, label='Normal')
+plt.plot(bin_centers_5,cdf_weibull_5, 'r-', lw=2, alpha=0.4, label='Weibull')
+plt.plot(bin_centers_5,cdf_normal_5, 'g-', lw=2, alpha=0.4, label='Normal')
 plt.plot(bin_centers_5,cdf_gamma_5, 'b-', lw=2, alpha=0.4, label='Gamma')
-plt.plot(bin_centers_5,cdf_lognormal_5, 'm-', lw=2, alpha=0.2, label='Log-normal ')
+plt.plot(bin_centers_5,cdf_lognormal_5, 'm-', lw=2, alpha=0.3, label='Log-normal ')
 plt.plot(bin_centers_5,cdf_laplace_5, 'c-', lw=2, alpha=0.4, label='Laplace ')
 plt.title('CDFs_1 of Fitted Distributions (RMSE DS)')
-plt.xlabel('Value')
+plt.xlabel('RMS Delay Spread')
 plt.ylabel('Cumulative Probability')
 plt.legend()
 plt.grid(True)
-
+plt.show()
 
 plt.figure(figsize=(10, 6))
 cdf_50 = CDF(RMS_DS_2,num_bin_1)
@@ -249,22 +251,23 @@ plt.plot(bin_centers_5, cdf_50, 'k-', lw=2, alpha=0.9, label='Data')
 plt.plot(bin_centers_5, cdf_weibull_5, 'g-', lw=2, alpha=0.4, label='Weibull')
 plt.plot(bin_centers_5, cdf_normal_5, 'r-', lw=2, alpha=0.4, label='Normal')
 plt.plot(bin_centers_5, cdf_gamma_5, 'b-', lw=2, alpha=0.4, label='Gamma')
-plt.plot(bin_centers_5, cdf_lognormal_5, 'm-', lw=2, alpha=0.2, label='Log-normal ')
+plt.plot(bin_centers_5, cdf_lognormal_5, 'm-', lw=2, alpha=0.3, label='Log-normal ')
 plt.plot(bin_centers_5, cdf_laplace_5, 'c-', lw=2, alpha=0.4, label='Laplace ')
 
 plt.title('CDFs of Fitted Distributions (RMSE DS)')
-plt.xlabel('Value')
+plt.xlabel('RMS Delay Spread')
 plt.ylabel('Cumulative Probability')
 plt.legend()
 plt.grid(True)
-
+plt.show()
 
 ################ coherence bandwidth Frank   ############################################################################### 
 num_bin = num_bin_1
 Bc_2 = np.array(Bc_2).flatten()
-fig, ax = plt.subplots(figsize=(10, 6))
+
+plt.figure(figsize=(10, 6))
 plt.subplots_adjust(left=0.1, bottom=0.25)
-hist_7, bins_7, patches_7= ax.hist(Bc_2, bins=num_bin_1, density=True,label='Histogram')
+hist_7, bins_7, patches_7 = plt.hist(Bc_2, bins=num_bin_1, density=True, alpha=0.7, color='gray', label='Histogram')
 bin_centers_7 = 0.5 * (bins_7[1:] + bins_7[:-1])
 #print (hist_7)
 # Fit the updated data
@@ -276,11 +279,11 @@ laplace_7, x_vals_lp_7,cdf_laplace_7= laplace_function(Bc_2,num_bin)
 
 
     # Plot the fitting curves
-#weibull_line, = ax.plot(x_vals_wb_7, weibull_7, 'r-', lw=2, alpha=0.6, label='Weibull PDF')
-#normal_line, = ax.plot(x_vals_n_7, normal_7, 'g-', lw=2, alpha=0.6, label='Normal PDF')
-gamma_line, = ax.plot(x_vals_g_7, gamma_7, 'b-', lw=2, alpha=0.6, label='Gamma PDF')
-#lognorm_line, = ax.plot(x_vals_ln_7, lognorm_7, 'm-', lw=2, alpha=0.6, label='Log-normal PDF')
-#laplace_line, = ax.plot(x_vals_lp_7, laplace_7, 'c-', lw=2, alpha=0.6, label='Laplace PDF')
+plt.plot(x_vals_wb_7, weibull_7, 'r-', lw=2, alpha=0.4, label='Weibull PDF')
+plt.plot(x_vals_n_7, normal_7, 'g-', lw=2, alpha=0.4, label='Normal PDF')
+plt.plot(x_vals_g_7, gamma_7, 'b-', lw=2, alpha=0.4, label='Gamma PDF')
+plt.plot(x_vals_ln_7, lognorm_7, 'm-', lw=2, alpha=0.3, label='Log-normal PDF')
+plt.plot(x_vals_lp_7, laplace_7, 'c-', lw=2, alpha=0.4, label='Laplace PDF')
 
 
 plt.title("Probability of Coherence Bandwidth")
@@ -288,6 +291,7 @@ plt.xlabel('Coherence Bandwidth 2 [Hz]')
 plt.ylabel('PDF')
 plt.legend()
 plt.grid(True)
+plt.show()
 
 #RMSE
 rmse_weibull_7 = calculate_rmse(hist_7, weibull_7)
@@ -295,7 +299,7 @@ rmse_normal_7 = calculate_rmse(hist_7, normal_7)
 rmse_gamma_7 = calculate_rmse(hist_7, gamma_7)
 rmse_lognormal_7 = calculate_rmse(hist_7, lognorm_7)
 rmse_laplace_7 = calculate_rmse(hist_7, laplace_7)
-
+print(f"####### Coherence Bandwidth ########")
 print(f'RMSE  Weibull coherence bandwidth: {rmse_weibull_7}')
 print(f'RMSE   Normal coherence bandwidth: {rmse_normal_7}')
 print(f'RMSE    Gamma coherence bandwidth: {rmse_gamma_7}')
@@ -306,29 +310,30 @@ print(f'RMSE  Laplace coherence bandwidth: {rmse_laplace_7}')
 sorted_7,p_h_7 = CDF_1(Bc_2)
 plt.figure(figsize=(10, 6))
 plt.plot(sorted_7,p_h_7, 'k-', lw=2, alpha=0.9, label='PDF')
-plt.plot(bin_centers_7,cdf_weibull_7, 'g-', lw=2, alpha=0.4, label='Weibull')
-plt.plot(bin_centers_7,cdf_normal_7, 'r-', lw=2, alpha=0.4, label='Normal')
+plt.plot(bin_centers_7,cdf_weibull_7, 'r-', lw=2, alpha=0.4, label='Weibull')
+plt.plot(bin_centers_7,cdf_normal_7, 'g-', lw=2, alpha=0.4, label='Normal')
 plt.plot(bin_centers_7,cdf_gamma_7, 'b-', lw=2, alpha=0.4, label='Gamma')
-plt.plot(bin_centers_7,cdf_lognormal_7, 'm-', lw=2, alpha=0.2, label='Log-normal ')
+plt.plot(bin_centers_7,cdf_lognormal_7, 'm-', lw=2, alpha=0.3, label='Log-normal ')
 plt.plot(bin_centers_7,cdf_laplace_7, 'c-', lw=2, alpha=0.4, label='Laplace ')
 plt.title('CDFs_1 of Fitted Distributions (Coherence Bandwidth)')
-plt.xlabel('Value')
+plt.xlabel('coherence bandwidth')
 plt.ylabel('Cumulative Probability')
 plt.legend()
 plt.grid(True)
+plt.show()
 
 
-plt.figure(figsize=(10, 6))
 cdf_70 = CDF(Bc_2,num_bin_1)
+plt.figure(figsize=(10, 6))
 plt.plot(bin_centers_7, cdf_70, 'k-', lw=2, alpha=0.9, label='Data')
-plt.plot(bin_centers_7, cdf_weibull_7, 'g-', lw=2, alpha=0.4, label='Weibull')
-plt.plot(bin_centers_7, cdf_normal_7, 'r-', lw=2, alpha=0.4, label='Normal')
+plt.plot(bin_centers_7, cdf_weibull_7, 'r-', lw=2, alpha=0.4, label='Weibull')
+plt.plot(bin_centers_7, cdf_normal_7, 'g-', lw=2, alpha=0.4, label='Normal')
 plt.plot(bin_centers_7, cdf_gamma_7, 'b-', lw=2, alpha=0.4, label='Gamma')
-plt.plot(bin_centers_7, cdf_lognormal_7, 'm-', lw=2, alpha=0.2, label='Log-normal ')
+plt.plot(bin_centers_7, cdf_lognormal_7, 'm-', lw=2, alpha=0.3, label='Log-normal ')
 plt.plot(bin_centers_7, cdf_laplace_7, 'c-', lw=2, alpha=0.4, label='Laplace ')
 
 plt.title('CDFs of Fitted Distributions (Coherence Bandwidth)')
-plt.xlabel('Value')
+plt.xlabel('coherence bandwidth')
 plt.ylabel('Cumulative Probability')
 plt.legend()
 plt.grid(True)

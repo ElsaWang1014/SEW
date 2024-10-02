@@ -1,4 +1,6 @@
 #%%
+
+
 import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,6 +10,7 @@ import math
 from scipy.signal import find_peaks
 from matplotlib.widgets import Slider
 import pickle
+from ipywidgets import interact
 
 
 # Informationen
@@ -96,8 +99,10 @@ number_2 =  int(np.ceil(num_milliseconds / co_time_2))
 
 APDP_ms = []
 #APDP_db_all = []
+all_peaks_all = []
 all_peaks_all_1 = []
 all_peaks_all_2 = []
+
 
 new_APDP_1 =  np.zeros(( number_1 * co_time_1 ,num_delays))
 new_APDP_2 =  np.zeros(( number_2 * co_time_2 ,num_delays))
@@ -109,19 +114,34 @@ co_bandwidth_1 = np.zeros(number_1)
 co_bandwidth_2 = np.zeros(number_2)
 all_peaks = np.zeros(num_delays*num_milliseconds)
 
+def  find_peaks_in_data(data,co_time):
+  all_peaks_all = []
+  for index in range(len(data)):
+    current_segment = data[index]
+    max_index = np.argmax(current_segment)
+    APDP_db_after_max = current_segment[max_index +1:] 
+                    
+    min_height = np.max(data[:,200:]) + 3
+    peaks, peak_heights = find_peaks(APDP_db_after_max, height = min_height, prominence = (0.1, None))
+    peaks = peaks + max_index +1
+    all_peaks = np.append(peaks, max_index)
+    all_peaks = np.sort(all_peaks)
+            
+    all_peaks_all.append(all_peaks)
+    #print(all_peaks.shape)
 
+  filename = f'all_peaks_for_every_{co_time}.pkl'
+  
+  with open(filename, 'wb') as f:
+      pickle.dump(all_peaks_all, f)
+
+  return  all_peaks_all
+
+APDP_db_all = np.load('Power_of_APDP_of_every_ms.npy')
+all_peaks_all =  find_peaks_in_data(APDP_db_all,1)
 
 #Figure
-APDP_db_all_1 = np.load('Power_of_APDP_of_every_24.npy')
-APDP_db_all_2 = np.load('Power_of_APDP_of_every_133.npy')
-ms_final_1 = np.load('ms_of_every_24.npy')
-ms_final_2 = np.load('ms_of_every_133.npy')
-with open('all_peaks_for_every_24.pkl', 'rb') as file:
-    all_peaks_all_1 = pickle.load(file)
-with open('all_peaks_for_every_133.pkl', 'rb') as file:
-    all_peaks_all_2 = pickle.load(file)
 
-#%%
 def plot_apdp_with_slider(data, peaks_all, ms_delay, co_time, round_numbers):
     # Create figure and axis
     
@@ -168,8 +188,19 @@ def plot_apdp_with_slider(data, peaks_all, ms_delay, co_time, round_numbers):
 
     # Connect slider to the update function
     slider.on_changed(update)
-    #interact(update);
     
+
+
+APDP_db_all_1 = np.load('Power_of_APDP_of_every_24.npy')
+APDP_db_all_2 = np.load('Power_of_APDP_of_every_133.npy')
+ms_final_1 = np.load('ms_of_every_24.npy')
+ms_final_2 = np.load('ms_of_every_133.npy')
+with open('all_peaks_for_every_24.pkl', 'rb') as file:
+    all_peaks_all_1 = pickle.load(file)
+with open('all_peaks_for_every_133.pkl', 'rb') as file:
+    all_peaks_all_2 = pickle.load(file)
+
+
 plot_apdp_with_slider(APDP_db_all_1, all_peaks_all_1, ms_final_1, co_time_1, round_numbers)
 plot_apdp_with_slider(APDP_db_all_2, all_peaks_all_2, ms_final_2, co_time_2, round_numbers)
 
@@ -201,9 +232,14 @@ plt.title("RMS Delay Spread every 133 ms over Time")
 plt.legend()
 plt.grid(True)
 
+
+
+
+
 plt.show()
 
-
+rms_24_RMSE_array = np.zeros(num_milliseconds)
+rms_133_RMSE_array = np.zeros(num_milliseconds)
 
 '''# Calculate the APDP
 
@@ -624,3 +660,6 @@ def update2(val):
 
 slider2.on_changed(update2)
 '''
+
+
+# %%

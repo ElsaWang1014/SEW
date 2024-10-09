@@ -8,9 +8,9 @@ import pandas as pd
 
 load_path = "/media/student/SEW/Bearbeitet_Data/Final _matlab"
 
-rx_index = 2
-scenario_index = 1
-round_numbers = [77]
+rx_index = 3
+scenario_index = 2
+round_numbers = [83]
 seconds = []
 data_by_seconds = {}
 

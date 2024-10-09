@@ -154,7 +154,7 @@ print(f'RMSE Lognormal MPC: {rmse_lognormal}')
 #CDF
 sorted,p_h = CDF_1(num_MPC)
 plt.figure(figsize=(10, 6))
-plt.plot(sorted,p_h, 'k-', lw=2, alpha=0.9, label='PDF')
+plt.scatter(sorted,p_h, color='k', lw=2, alpha=0.9, s=5, label='PDF')
 plt.plot(bin_centers,cdf_weibull, 'r-', lw=2, alpha=0.4, label='Weibull')
 plt.plot(bin_centers,cdf_normal, 'g-', lw=2, alpha=0.4, label='Normal')
 plt.plot(bin_centers,cdf_gamma, 'b-', lw=2, alpha=0.4, label='Gamma')

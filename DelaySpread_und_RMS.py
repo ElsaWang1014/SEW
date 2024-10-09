@@ -1,6 +1,6 @@
 #%%
-
-
+#%matplotlib widget
+from sklearn.metrics import mean_squared_error
 import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
@@ -47,7 +47,7 @@ for second in range(1,26):
   data_1 = []
   for round_number in round_numbers:
     
-    filename = f"Round_{round_number}_AP_1_RF_0_Sec_{second}.mat"
+    filename = f"Round_{round_number}_AP_1_RF_1_Sec_{second}.mat"
     full_filename = os.path.join(load_path, filename)
     if os.path.exists(full_filename):
       mat = scipy.io.loadmat(full_filename)
@@ -61,9 +61,9 @@ for second in range(1,26):
   data.append(data_1)
   
 data = np.array(data) 
-#print (f"data shape: {data.shape}")
+print (f"data shape: {data.shape}")
 data = np.concatenate(data, axis=2)
-#print (f"data shape: {data.shape}")
+print (f"data shape: {data.shape}")
 
 
 #coherence Time
@@ -188,8 +188,37 @@ def plot_apdp_with_slider(data, peaks_all, ms_delay, co_time, round_numbers):
 
     # Connect slider to the update function
     slider.on_changed(update)
+    #plt.show()
     
+def calculate_rmse(hist, val,co_time):
+    rmse = np.sqrt(mean_squared_error(hist, val))
+    power_filename = f'rmse_of_rms_of_every_{co_time}.npy'
+        
+    np.save (power_filename,rmse)
+    return rmse
 
+def interrupt (vorne,co_time,number):
+    new_array = np.zeros(num_milliseconds)
+    for i in range(number):
+        start_idx = i * co_time
+        end_idx = min ((i+1)*co_time,num_milliseconds)
+        new_array [start_idx: end_idx] = vorne[i] 
+    power_filename = f'new_array_of_rms_of_every_{co_time}.npy'
+        
+    np.save (power_filename,new_array)
+  
+    return new_array
+
+def abs_error (val1, val2,co_time):
+    error = np.zeros(num_milliseconds)
+    for i in range(num_milliseconds):
+            error = val2 - val1
+    power_filename = f'absolute_error_of_rms_of_every_{co_time}.npy'
+        
+    np.save (power_filename,error)
+    return error
+
+    
 
 APDP_db_all_1 = np.load('Power_of_APDP_of_every_24.npy')
 APDP_db_all_2 = np.load('Power_of_APDP_of_every_133.npy')
@@ -202,7 +231,9 @@ with open('all_peaks_for_every_133.pkl', 'rb') as file:
 
 
 plot_apdp_with_slider(APDP_db_all_1, all_peaks_all_1, ms_final_1, co_time_1, round_numbers)
+
 plot_apdp_with_slider(APDP_db_all_2, all_peaks_all_2, ms_final_2, co_time_2, round_numbers)
+
 
 
 rms_delay_spread_array = np.load('rms_delay_spread_of_every_1000_ms.npy')
@@ -213,8 +244,10 @@ plt.ylabel("RMS Delay Spread (ns)")
 plt.title("RMS Delay Spread every ms over Time")
 plt.legend()
 plt.grid(True)
+#plt.show()
 
 rms_delay_spread_array_1 = np.load('rms_delay_spread_of_every_24_ms.npy')
+#print(f"tpye of rms 1 :{type(rms_delay_spread_array_1)}")
 plt.figure(figsize=(20, 6))
 plt.plot(rms_delay_spread_array_1 * 1e9, label='RMS Delay Spread (jede 24ms)')
 plt.xlabel("Time (milliseconds)")
@@ -222,6 +255,7 @@ plt.ylabel("RMS Delay Spread (ns)")
 plt.title("RMS Delay Spread every 24 ms over Time")
 plt.legend()
 plt.grid(True)
+#plt.show()
 
 rms_delay_spread_array_2 = np.load('rms_delay_spread_of_every_133_ms.npy')
 plt.figure(figsize=(20, 6))
@@ -231,15 +265,41 @@ plt.ylabel("RMS Delay Spread (ns)")
 plt.title("RMS Delay Spread every 133 ms over Time")
 plt.legend()
 plt.grid(True)
+#plt.show()
 
+#Error analyse
+rms_24_interrupt_array = np.load('new_array_of_rms_of_every_24.npy')
+#print(f"interrupt : {rms_24_interrupt_array}")
+rms_133_interrupt_array = np.load('new_array_of_rms_of_every_133.npy')
 
+RMSE_24 = np.load('rmse_of_rms_of_every_24.npy')
+print(f"RMSE between every ms and every 24ms:{RMSE_24}")
+RMSE_133 = np.load('rmse_of_rms_of_every_133.npy')
+print(f"RMSE between every ms and every 133ms:{RMSE_133}")
 
+abs_error_24 = np.load('absolute_error_of_rms_of_every_24.npy')
+print(f"absolute Error between every ms and every 24ms :{abs_error_24}")
+plt.figure(figsize=(20, 6))
+plt.plot(abs_error_24, label='RMS Delay Spread (jede 24ms)')
+plt.xlabel("Time (milliseconds)")
+plt.ylabel("Absolute Error")
+plt.title("Absolute Error every 24 ms over Time")
+plt.legend()
+plt.grid(True)
+#plt.show()
 
-
+abs_error_133= np.load('absolute_error_of_rms_of_every_133.npy')
+print(f"absolute Error between every ms and every 133ms :{abs_error_133}")
+plt.figure(figsize=(20, 6))
+plt.plot(abs_error_133, label='RMS Delay Spread (jede 24ms)')
+plt.xlabel("Time (milliseconds)")
+plt.ylabel("Absolute Error")
+plt.title("Absolute Error every 24 ms over Time")
+plt.legend()
+plt.grid(True)
 plt.show()
 
-rms_24_RMSE_array = np.zeros(num_milliseconds)
-rms_133_RMSE_array = np.zeros(num_milliseconds)
+
 
 '''# Calculate the APDP
 

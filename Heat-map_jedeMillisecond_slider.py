@@ -8,7 +8,7 @@ import os
 
 
 #Inforamtionen
-load_path = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_AGVHorizontal/"
+load_path = "/media/student/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_AGVHorizontal/"
 rounds = set()
 round_numbers = [77,78,79,80,81,82]
 second = 2

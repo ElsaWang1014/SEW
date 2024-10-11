@@ -1,3 +1,5 @@
+#%%
+
 import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
@@ -5,7 +7,7 @@ import os
 
 #Inforamtionen
 #load_path = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_Normal/Round_3_AP_1_RF_0_Sec_20.mat"
-load_path_1 = "/media/campus/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_Normal/"
+load_path_1 = "/media/student/SEW/Bearbeitet_Data/Rx1/Tag1_Scenario1_Normal/"
 round_number = 1
 #second = 10
 cirs_data = []
@@ -23,9 +25,9 @@ for filenames in os.listdir(load_path_1):
        seconds.sort()
 
     
-       print (f"second ist {seconds}")
-       print(f"filename is：{filenames}")
-       print(f"repr filename： {repr(filenames)}")
+       #print (f"second ist {seconds}")
+       #print(f"filename is：{filenames}")
+       #print(f"repr filename： {repr(filenames)}")
 
 
 
@@ -43,7 +45,7 @@ for second in seconds:
         for ms in range(cirs_data.shape[1]):
             data_db[(second, ms)] = 10 * np.log10(np.abs(cirs_data[:, ms]))
  #data[filename] = cirs_data
- print(filename)
+ #print(filename)
  #print(data)
 
 
@@ -71,13 +73,8 @@ for key in data_db.keys():
 
 # Figur
 
-#plt.plot(data_first_millisecond)
-#plt.plot(data_db[(24,500)])
-#plt.show()
 
-#xticks = [i * 1000 for i in range(len(seconds) + 1)]
-#x_tick_labels = [f"{second}s" for second in [seconds[0]] + seconds]
-
+plt.figure(figsize=(25, 10))
 plt.plot(np.arange(0,len(seconds),0.001) , correlations,color='b')
 plt.xlabel("seconds")
 #plt.xticks(ticks=xticks,labels=x_tick_labels)        

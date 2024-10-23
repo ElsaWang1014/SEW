@@ -74,23 +74,64 @@ correlation_means_3_0 = np.load('correlation_mean_RX3_RF0.npy')
 correlation_means_3_1 = np.load('correlation_mean_RX3_RF1.npy')
 
 
-correlation_means_2_0 = correlation_means_2_0[0:8]
-correlation_means_2_1 = correlation_means_2_1[0:8]
-correlation_means_3_0 = correlation_means_3_0[0:8]
-correlation_means_3_1 = correlation_means_3_1[0:8]
+correlation_means_2_0 = correlation_means_2_0[0:9]
+correlation_means_2_1 = correlation_means_2_1[0:9]
+correlation_means_3_0 = correlation_means_3_0[0:9]
+correlation_means_3_1 = correlation_means_3_1[0:9]
 # Figure 
 plt.subplots(figsize=(10, 6))
-x_values = np.arange(0, 8) * 2
+x_values = np.arange(0, 9) * 2
 plt.plot(x_values,correlation_means_2_0, marker='o',label ='RX2_RF0')
 plt.plot(x_values,correlation_means_2_1, marker='o',label ='RX2_RF1')
 plt.plot(x_values,correlation_means_3_0, marker='o',label ='RX3_RF0')
 plt.plot(x_values,correlation_means_3_1, marker='o',label ='RX3_RF1')
-plt.title('Mean Correlation Over Time for Selected Millisecond')
+plt.title('Mean Correlation Over Time ')
 plt.xlabel('Time in minuten')
 plt.xticks(x_values) 
 plt.axhline(y=0.5, color ='purple', linestyle='--')
 plt.legend()
 plt.grid(True)
+
+'''
+plt.subplots(figsize=(10, 6))
+x_values = np.arange(0, 8) * 2
+plt.plot(x_values,correlation_means_2_0, marker='o',label ='RX2_RF0')
+plt.title('Mean Correlation Over Time ----- RX2_RF0')
+plt.xlabel('Time in minuten')
+plt.xticks(x_values) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.legend()
+plt.grid(True)
+
+plt.subplots(figsize=(10, 6))
+x_values = np.arange(0, 8) * 2
+plt.plot(x_values,correlation_means_2_1, color ='orange', marker='o',label ='RX2_RF1')
+plt.title('Mean Correlation Over Time ----- RX2_RF1')
+plt.xlabel('Time in minuten')
+plt.xticks(x_values) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.legend()
+plt.grid(True)
+
+plt.subplots(figsize=(10, 6))
+x_values = np.arange(0, 8) * 2
+plt.plot(x_values,correlation_means_3_0,color ='green', marker='o',label ='RX3_RF0')
+plt.title('Mean Correlation Over Time ----- RX3_RF0')
+plt.xlabel('Time in minuten')
+plt.xticks(x_values) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.legend()
+plt.grid(True)
+
+plt.subplots(figsize=(10, 6))
+x_values = np.arange(0, 8) * 2
+plt.plot(x_values,correlation_means_3_1,color ='red', marker='o',label ='RX3_RF1')
+plt.title('Mean Correlation Over Time ----- RX3_RF1')
+plt.xlabel('Time in minuten')
+plt.xticks(x_values) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.legend()
+plt.grid(True)'''
 #plt.show()
 
 
@@ -187,6 +228,56 @@ plt.xticks(np.arange(0,max(x_values)+25,25))
 plt.axhline(y=0.5, color ='purple', linestyle='--')
 plt.grid(True)
 plt.legend()
+'''
+plt.subplots(figsize=(60, 10))
+x_values = np.arange(0, num_k_pos + 1) 
+#print(f"x value :{x_values}")
+plt.plot(x_values,correlation_means_2_0, marker='o',label = 'RX2_RF0')
+#plt.plot(x_values,correlation_means, marker='o')
+plt.title('Mean Correlation Over Position----- RX2_RF0')
+plt.xlabel('Distance in cm')
+plt.xticks(np.arange(0,max(x_values)+25,25)) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.grid(True)
+plt.legend()
+
+plt.subplots(figsize=(60, 10))
+x_values = np.arange(0, num_k_pos + 1) 
+#print(f"x value :{x_values}")
+plt.plot(x_values,correlation_means_2_1, color ='orange',marker='o',label = 'RX2_RF1')
+#plt.plot(x_values,correlation_means, marker='o')
+plt.title('Mean Correlation Over Position----- RX2_RF1')
+plt.xlabel('Distance in cm')
+plt.xticks(np.arange(0,max(x_values)+25,25)) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.grid(True)
+plt.legend()
+
+plt.subplots(figsize=(60, 10))
+x_values = np.arange(0, num_k_pos + 1) 
+#print(f"x value :{x_values}")
+plt.plot(x_values,correlation_means_3_0, color ='green',marker='o',label = 'RX3_RF0')
+#plt.plot(x_values,correlation_means, marker='o')
+plt.title('Mean Correlation Over Position ----- RX3_RF0')
+plt.xlabel('Distance in cm')
+plt.xticks(np.arange(0,max(x_values)+25,25)) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.grid(True)
+plt.legend()
+
+plt.subplots(figsize=(60, 10))
+x_values = np.arange(0, num_k_pos + 1) 
+#print(f"x value :{x_values}")
+plt.plot(x_values,correlation_means_3_1, color ='red',marker='o',label = 'RX3_RF1')
+#plt.plot(x_values,correlation_means, marker='o')
+plt.title('Mean Correlation Over Position ----- RX3_RF1')
+plt.xlabel('Distance in cm')
+plt.xticks(np.arange(0,max(x_values)+25,25)) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.grid(True)
+plt.legend()
+
+'''
 plt.show()
 
 ###########################################################     Correlation-process   ###########################################################

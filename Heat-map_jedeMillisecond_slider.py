@@ -1,3 +1,6 @@
+#%%
+
+#%matplotlib widget
 import numpy as np
 import scipy.io
 import matplotlib.pyplot as plt
@@ -119,11 +122,11 @@ ax.yaxis.set_visible(False)
 
 #  Slider 
 ax_slider = plt.axes([0.1, 0.1, 0.8, 0.05], facecolor='lightgoldenrodyellow')
-slider = Slider(ax_slider, 'Milliseconds', 0, num_milliseconds, valinit=t0, valfmt='%d ms')
+slider = Slider(ax_slider, 'Milliseconds', 1, num_milliseconds, valinit=t0, valfmt='%d ms')
 
 #Function for every ms
 def update(val):
-    t = int(slider.val)
+    t = int(slider.val)-1
     corr_t = corr[:, :, t]
     heatmap.set_data(corr_t)
     fig.canvas.draw_idle()

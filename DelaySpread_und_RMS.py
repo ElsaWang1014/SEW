@@ -1,5 +1,4 @@
-#%%
-#%matplotlib widget
+
 from sklearn.metrics import mean_squared_error
 import scipy.io
 import numpy as np
@@ -10,7 +9,7 @@ import math
 from scipy.signal import find_peaks
 from matplotlib.widgets import Slider
 import pickle
-from ipywidgets import interact
+
 
 
 # Informationen

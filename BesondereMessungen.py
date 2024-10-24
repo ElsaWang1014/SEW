@@ -64,6 +64,15 @@ plt.grid(True)'''
 ###########################################################     Correlation-time-calculation   ###########################################################
 data_v = np.load('data_for_BesondereMessungen_RX2_RF0_vertikal.npy')
 num_k_v = data_v.shape[0] 
+
+
+def find_threshold_distance(correlation_data, threshold=0.5):
+    for i, corr in enumerate(correlation_data):
+        if corr < threshold:
+            return x_values[i]  
+    return None
+
+
 correlation_means_2_0_v = np.load('correlation_mean_RX2_RF0_vertikal.npy')
 correlation_means_2_1_v = np.load('correlation_mean_RX2_RF1_vertikal.npy')
 correlation_means_3_0_v = np.load('correlation_mean_RX3_RF0_vertikal.npy')
@@ -73,13 +82,32 @@ correlation_means_2_0_v = correlation_means_2_0_v[0:9]
 correlation_means_2_1_v = correlation_means_2_1_v[0:9]
 correlation_means_3_0_v = correlation_means_3_0_v[0:9]
 correlation_means_3_1_v = correlation_means_3_1_v[0:9]
+
+
 # Figure 
 plt.subplots(figsize=(10, 6))
 x_values = np.arange(0, 9) * 2
+
+threshold_dist_2_0_v = find_threshold_distance(correlation_means_2_0_v)
+threshold_dist_2_1_v = find_threshold_distance(correlation_means_2_1_v)
+threshold_dist_3_0_v = find_threshold_distance(correlation_means_3_0_v)
+threshold_dist_3_1_v = find_threshold_distance(correlation_means_3_1_v)
+
+
 plt.plot(x_values,correlation_means_2_0_v, marker='o',label ='RX2_RF0')
 plt.plot(x_values,correlation_means_2_1_v, marker='o',label ='RX2_RF1')
 plt.plot(x_values,correlation_means_3_0_v, marker='o',label ='RX3_RF0')
 plt.plot(x_values,correlation_means_3_1_v, marker='o',label ='RX3_RF1')
+
+if threshold_dist_2_0_v is not None:
+    plt.axvline(x=threshold_dist_2_0_v, color='r', linestyle='--', label=f'RX2_RF0 at {threshold_dist_2_0_v}mm')
+if threshold_dist_2_1_v is not None:
+    plt.axvline(x=threshold_dist_2_1_v, color='g', linestyle='--', label=f'RX2_RF1 at {threshold_dist_2_1_v}mm')
+if threshold_dist_3_0_v is not None:
+    plt.axvline(x=threshold_dist_3_0_v, color='b', linestyle='--', label=f'RX3_RF0 at {threshold_dist_3_0_v}mm')
+if threshold_dist_3_1_v is not None:
+    plt.axvline(x=threshold_dist_3_1_v, color='purple', linestyle='--', label=f'RX3_RF1 at {threshold_dist_3_1_v}mm')
+
 plt.title('Mean Correlation Over Time ----vertikal')
 plt.xlabel('Time in minuten')
 plt.xticks(x_values) 
@@ -97,10 +125,26 @@ correlation_means_3_1_h = np.load('correlation_mean_RX3_RF1_horizontal.npy')
 # Figure 
 plt.subplots(figsize=(10, 6))
 x_values = np.arange(0, num_k_h) * 2
+
+threshold_dist_2_0_h = find_threshold_distance(correlation_means_2_0_h)
+threshold_dist_2_1_h = find_threshold_distance(correlation_means_2_1_h)
+threshold_dist_3_0_h = find_threshold_distance(correlation_means_3_0_h)
+threshold_dist_3_1_h = find_threshold_distance(correlation_means_3_1_h)
+
 plt.plot(x_values,correlation_means_2_0_h, marker='o',label ='RX2_RF0')
 plt.plot(x_values,correlation_means_2_1_h, marker='o',label ='RX2_RF1')
 plt.plot(x_values,correlation_means_3_0_h, marker='o',label ='RX3_RF0')
 plt.plot(x_values,correlation_means_3_1_h, marker='o',label ='RX3_RF1')
+
+if threshold_dist_2_0_h is not None:
+    plt.axvline(x=threshold_dist_2_0_h, color='r', linestyle='--', label=f'RX2_RF0 at {threshold_dist_2_0_h}mm')
+if threshold_dist_2_1_h is not None:
+    plt.axvline(x=threshold_dist_2_1_h, color='g', linestyle='--', label=f'RX2_RF1 at {threshold_dist_2_1_h}mm')
+if threshold_dist_3_0_h is not None:
+    plt.axvline(x=threshold_dist_3_0_h, color='b', linestyle='--', label=f'RX3_RF0 at {threshold_dist_3_0_h}mm')
+if threshold_dist_3_1_h is not None:
+    plt.axvline(x=threshold_dist_3_1_h, color='purple', linestyle='--', label=f'RX3_RF1 at {threshold_dist_3_1_h}mm')
+
 plt.title('Mean Correlation Over Time ---horizontal')
 plt.xlabel('Time in minuten')
 plt.xticks(x_values) 

@@ -12,6 +12,8 @@ import json
 ###########################################################     Data-Information             ###########################################################
 load_path = "/media/student/SEW/Bearbeitet_Data/Rx3/Tag2_Scenario3_Besondermessungen"
 round_numbers = [243,244,245,246,247,248,250,251,252,253,254,257,258,259,260,261,262,264,265,266]
+round_numbers_v = [243,244,245,246,247,248,250,260,261,262,264,265,266]
+round_numbers_h = [251,252,253,254,257,258,259]
 #round_numbers = [243,244]
 #round_number =244
 seconds = []
@@ -21,11 +23,44 @@ num_sec = 20
 
 num_delay = 512
 num_millisecond = 1000
-
+'''
 data = np.load('data_all_for_BesondereMessungen_RX3_RF0.npy')
-#print(f"data shape:{data.shape}")
 
+data_v =  np.vstack((data[:7,:],data[14:20,:]))
+data_filename_v = f'data_for_BesondereMessungen_RX3_RF0_vertikal.npy'
+np.save(data_filename_v, data_v)
+data_h = data[7:14]
+data_filename_h = f'data_for_BesondereMessungen_RX3_RF0_horizontal.npy'
+np.save(data_filename_h, data_h)
+#print(f"data shape:{data.shape}")'''
+'''
+plt.subplots(figsize=(10,6))
+rounds_v = [f'Round {rn}' for rn in round_numbers_v]
+rounds_h = [f'Round {rn}' for rn in round_numbers_h]
+plt.plot(10*np.log10(data_v.T))
+plt.legend(rounds_v, loc='upper right')
+plt.title('Receive Signal Power')
+plt.xlabel('Time in millisecond')
+plt.ylabel('Power in dBm')
+plt.grid(True)
 
+plt.subplots(figsize=(10,6))
+plt.plot(10*np.log10(data_h.T))
+plt.legend(rounds_h, loc='upper right')
+plt.title('Receive Signal Power')
+plt.xlabel('Time in millisecond')
+plt.ylabel('Power in dBm')
+plt.grid(True)
+
+plt.subplots(figsize=(10,6))
+rounds= [f'Round {rn}' for rn in round_numbers]
+plt.plot(10*np.log10(data.T))
+plt.legend(rounds, loc='upper right')
+plt.title('Receive Signal Power')
+plt.xlabel('Time in millisecond')
+plt.ylabel('Power in dBm')
+plt.grid(True)'''
+'''
 ###########################################################     Correlation-time-calculation   ###########################################################
 
 num_k = data.shape[0] - 1
@@ -55,7 +90,7 @@ plt.grid(True)
 
 
 #plt.show()
-
+'''
 
 ###########################################################     Correlation-Position-calculation   ###########################################################
 
@@ -69,29 +104,93 @@ correlation_means_2_1 = np.load('correlation_mean_position_RX2_RF1.npy')
 correlation_means_3_0 = np.load('correlation_mean_position_RX3_RF0.npy')
 correlation_means_3_1 = np.load('correlation_mean_position_RX3_RF1.npy')
 
+correlation_means_2_0_v = np.load('correlation_mean_position_RX2_RF0_vertikal.npy')
+correlation_means_2_0_h = np.load('correlation_mean_position_RX2_RF0_horizontal.npy')
+correlation_means_2_1_v = np.load('correlation_mean_position_RX2_RF1_vertikal.npy')
+correlation_means_2_1_h = np.load('correlation_mean_position_RX2_RF1_horizontal.npy')
+correlation_means_3_0_v = np.load('correlation_mean_position_RX2_RF0_vertikal.npy')
+correlation_means_3_0_h = np.load('correlation_mean_position_RX2_RF0_horizontal.npy')
+correlation_means_3_1_v = np.load('correlation_mean_position_RX3_RF1_vertikal.npy')
+correlation_means_3_1_h = np.load('correlation_mean_position_RX3_RF1_horizontal.npy')
+
+
 correlation_means_within_5mm_2_0 = np.load('correlation_mean_position_within_5mm_RX2_RF0.npy')
 correlation_means_within_5mm_2_1 = np.load('correlation_mean_position_within_5mm_RX2_RF1.npy')
 correlation_means_within_5mm_3_0 = np.load('correlation_mean_position_within_5mm_RX3_RF0.npy')
 correlation_means_within_5mm_3_1 = np.load('correlation_mean_position_within_5mm_RX3_RF1.npy')
 
+correlation_means_within_5mm_2_0_v = np.load('correlation_mean_position_within_5mm_RX2_RF0_vertikal.npy')
+correlation_means_within_5mm_2_0_h = np.load('correlation_mean_position_within_5mm_RX2_RF0_horizontal.npy')
+correlation_means_within_5mm_2_1_v = np.load('correlation_mean_position_within_5mm_RX2_RF1_vertikal.npy')
+correlation_means_within_5mm_2_1_h = np.load('correlation_mean_position_within_5mm_RX2_RF1_horizontal.npy')
+correlation_means_within_5mm_3_0_v = np.load('correlation_mean_position_within_5mm_RX3_RF0_vertikal.npy')
+correlation_means_within_5mm_3_0_h = np.load('correlation_mean_position_within_5mm_RX3_RF0_horizontal.npy')
+correlation_means_within_5mm_3_1_v = np.load('correlation_mean_position_within_5mm_RX3_RF1_vertikal.npy')
+correlation_means_within_5mm_3_1_h = np.load('correlation_mean_position_within_5mm_RX3_RF1_horizontal.npy')
+
 num_k_pos = rsp_position_2_0.shape[0] - 1
 # Figure 
 plt.subplots(figsize=(60, 10))
 x_values = np.arange(0, num_k_pos + 1) 
-#print(f"x value :{x_values}")
 plt.plot(x_values,correlation_means_2_0, alpha = 1,marker='o',label = 'RX2_RF0 at time point')
 plt.plot(x_values,correlation_means_2_1, alpha = 1,marker='o',label = 'RX2_RF1 at time point')
 plt.plot(x_values,correlation_means_3_0, alpha = 1,marker='o',label = 'RX3_RF0 at time point')
 plt.plot(x_values,correlation_means_3_1, alpha = 1,marker='o',label = 'RX3_RF1 at time point')
-plt.title('Mean Correlation Over Position----- RX2_RF0')
+plt.title('Mean Correlation Over Position')
 plt.xlabel('Distance in cm')
 plt.xticks(np.arange(0,max(x_values)+25,25)) 
 plt.axhline(y=0.5, color ='purple', linestyle='--')
 plt.grid(True)
 plt.legend()
 
+plt.subplots(figsize=(60, 10))
+plt.plot(x_values,correlation_means_2_0_v, alpha = 1,marker='o',label = 'RX2_RF0 , vertikal ,at time point')
+plt.plot(x_values,correlation_means_2_1_v, alpha = 1,marker='o',label = 'RX2_RF1 , vertikal ,at time point')
+plt.plot(x_values,correlation_means_3_0_v, alpha = 1,marker='o',label = 'RX3_RF0 , vertikal ,at time point')
+plt.plot(x_values,correlation_means_3_1_v, alpha = 1,marker='o',label = 'RX3_RF1 , vertikal ,at time point')
+plt.title('Mean Correlation Over Position')
+plt.xlabel('Distance in cm')
+plt.xticks(np.arange(0,max(x_values)+25,25)) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.grid(True)
+plt.legend()
 
+plt.subplots(figsize=(60, 10))
+plt.plot(x_values,correlation_means_2_0_h, alpha = 1,marker='o',label = 'RX2_RF0 , horizontal ,at time point')
+plt.plot(x_values,correlation_means_2_1_h, alpha = 1,marker='o',label = 'RX2_RF1 , horizontal ,at time point')
+plt.plot(x_values,correlation_means_3_0_h, alpha = 1,marker='o',label = 'RX3_RF0 , horizontal ,at time point')
+plt.plot(x_values,correlation_means_3_1_h, alpha = 1,marker='o',label = 'RX3_RF1 , horizontal ,at time point')
+plt.title('Mean Correlation Over Position')
+plt.xlabel('Distance in cm')
+plt.xticks(np.arange(0,max(x_values)+25,25)) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.grid(True)
+plt.legend()
 
+plt.subplots(figsize=(60, 10))
+x_values = np.arange(0, num_k_pos + 1) 
+plt.plot(x_values,correlation_means_3_1_v, alpha = 1,marker='o',label = 'RX3_RF1 , vertikal , at the time point')
+plt.plot(x_values,correlation_means_within_5mm_3_1_v, alpha = 0.5,marker='D',label = 'RX3_RF1 , vertikal , around the time point')
+plt.title('Mean Correlation Over Position----- RX3_RF1')
+plt.xlabel('Distance in cm')
+plt.xticks(np.arange(0,max(x_values)+25,25)) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.grid(True)
+plt.legend()
+
+plt.subplots(figsize=(60, 10))
+x_values = np.arange(0, num_k_pos + 1) 
+plt.plot(x_values,correlation_means_3_1_h, alpha = 1,marker='o',label = 'RX3_RF1 hotizontal at the time point')
+plt.plot(x_values,correlation_means_within_5mm_3_1_h, alpha = 0.5,marker='D',label = 'RX3_RF1 horizontal around the time point')
+plt.title('Mean Correlation Over Position----- RX3_RF1')
+plt.xlabel('Distance in cm')
+plt.xticks(np.arange(0,max(x_values)+25,25)) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.grid(True)
+plt.legend()
+
+plt.show()
+'''
 plt.subplots(figsize=(60, 10))
 x_values = np.arange(0, num_k_pos + 1) 
 #print(f"x value :{x_values}")
@@ -143,7 +242,7 @@ plt.legend()
 
 plt.show()
 
-
+'''
 
 ###########################################################     data-process   ###########################################################
 '''data = np.zeros((num_round,num_sec*num_millisecond))
@@ -190,7 +289,8 @@ for filenames in os.listdir(load_path):
 
 ###########################################################     Correlation-process   ###########################################################
 
-'''correlation_means = np.zeros((num_millisecond*num_sec, num_k + 1)) # Array to hold mean correlations for each millisecond
+'''
+correlation_means = np.zeros((num_millisecond*num_sec, num_k + 1)) # Array to hold mean correlations for each millisecond
 for ms in range(num_millisecond*num_sec):
     correlation =[]
     
@@ -260,8 +360,8 @@ np.save (filename,position)
 
     correlation.append(np.nanmean(temp_correlations_self) )'''
 
-
 '''
+data = np.load('data_for_BesondereMessungen_RX2_RF1_vertikal.npy')
 position = np.load('position_scenario3.npy', allow_pickle=True)
 delta_time = []
 delta_dis = []
@@ -288,10 +388,10 @@ while i < len(position)-1:
             break
     if j == len(position) -1 :
         i = len(position)
-        break
+        break   '''
 #speed = np.array(all_speed)
 #print(f"speed: {speed} m/s")
-
+'''
 all_rsp_positions = []
 for idx, delta_time_point in enumerate(delta_time) :
     index_delta_time = -1
@@ -326,30 +426,30 @@ for idx, delta_time_point in enumerate(delta_time) :
     indices_within_5mm = sorted(backward_indices + [index_delta_time] + forward_indices)
 
     rsp_position_within_5mm = np.array([data[:,i] for i in indices_within_5mm])
-    print(f"rsp:{rsp_position_within_5mm}")
+    #print(f"rsp:{rsp_position_within_5mm}")
 
     all_rsp_positions.append(rsp_position_within_5mm)
 
-rsp_filename = f'rsp_position_within_5mm_RX3_RF0.npy'
+rsp_filename = f'rsp_position_within_5mm_RX3_RF0_horizontal.npy'
 np.save (rsp_filename,all_rsp_positions)
 #print(len(delta_time))
-
-
+'''
+'''
 rsp_position = []
 for time in delta_time:
     rsp_position.append(data[:,int(time*1000)])
 rsp_position =  np.array(rsp_position)
 #print(rsp_position)
 #print(f"shape:{rsp_position.shape}")       
-rsp_filename = f'rsp_position_RX3_RF1.npy'
+rsp_filename = f'rsp_position_RX2_RF1_vertikal.npy'
 np.save (rsp_filename,rsp_position)
 
+'''
+'''
 #Correlation
-
-
 #print (f"number k :{num_k_pos}")
 
-rsp_position  = np.load('rsp_position_within_5mm_RX3_RF1.npy',allow_pickle=True)
+rsp_position  = np.load('rsp_position_within_5mm_RX3_RF0_vertikal.npy',allow_pickle=True)
 
 correlations = []
 for k  in range(rsp_position.shape[0]):
@@ -363,12 +463,17 @@ for k  in range(rsp_position.shape[0]):
         #print(correlations)
 correlation_means = correlations
 #print(correlation_means)
-corr_filename = f'correlation_mean_position_within_5mm_RX3_RF1.npy'
+corr_filename = f'correlation_mean_position_within_5mm_RX3_RF0_vertikal.npy'
 np.save (corr_filename,correlation_means)
-
 
 '''
 
+
+
+
+
+
+###########################################################     Figure-possiblity   ###########################################################
 
 '''
 
@@ -388,9 +493,6 @@ plt.grid(True)
 plt.legend()
 '''
 
-
-
-###########################################################     Figure-possiblity   ###########################################################
 
 '''
 plt.subplots(figsize=(10, 6))

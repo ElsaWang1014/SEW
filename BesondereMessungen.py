@@ -27,7 +27,7 @@ num_millisecond = 1000
 data = np.load('data_all_for_BesondereMessungen_RX3_RF0.npy')
 
 data_v =  np.vstack((data[:7,:],data[14:20,:]))
-data_filename_v = f'data_for_BesondereMessungen_RX3_RF0_vertikal.npy'
+data_filename_v = f'7'
 np.save(data_filename_v, data_v)
 data_h = data[7:14]
 data_filename_h = f'data_for_BesondereMessungen_RX3_RF0_horizontal.npy'
@@ -60,28 +60,48 @@ plt.title('Receive Signal Power')
 plt.xlabel('Time in millisecond')
 plt.ylabel('Power in dBm')
 plt.grid(True)'''
-'''
+
 ###########################################################     Correlation-time-calculation   ###########################################################
+data_v = np.load('data_for_BesondereMessungen_RX2_RF0_vertikal.npy')
+num_k_v = data_v.shape[0] 
+correlation_means_2_0_v = np.load('correlation_mean_RX2_RF0_vertikal.npy')
+correlation_means_2_1_v = np.load('correlation_mean_RX2_RF1_vertikal.npy')
+correlation_means_3_0_v = np.load('correlation_mean_RX3_RF0_vertikal.npy')
+correlation_means_3_1_v = np.load('correlation_mean_RX3_RF1_vertikal.npy')
 
-num_k = data.shape[0] - 1
-correlation_means_2_0 = np.load('correlation_mean_RX2_RF0.npy')
-correlation_means_2_1 = np.load('correlation_mean_RX2_RF1.npy')
-correlation_means_3_0 = np.load('correlation_mean_RX3_RF0.npy')
-correlation_means_3_1 = np.load('correlation_mean_RX3_RF1.npy')
-
-
-correlation_means_2_0 = correlation_means_2_0[0:9]
-correlation_means_2_1 = correlation_means_2_1[0:9]
-correlation_means_3_0 = correlation_means_3_0[0:9]
-correlation_means_3_1 = correlation_means_3_1[0:9]
+correlation_means_2_0_v = correlation_means_2_0_v[0:9]
+correlation_means_2_1_v = correlation_means_2_1_v[0:9]
+correlation_means_3_0_v = correlation_means_3_0_v[0:9]
+correlation_means_3_1_v = correlation_means_3_1_v[0:9]
 # Figure 
 plt.subplots(figsize=(10, 6))
 x_values = np.arange(0, 9) * 2
-plt.plot(x_values,correlation_means_2_0, marker='o',label ='RX2_RF0')
-plt.plot(x_values,correlation_means_2_1, marker='o',label ='RX2_RF1')
-plt.plot(x_values,correlation_means_3_0, marker='o',label ='RX3_RF0')
-plt.plot(x_values,correlation_means_3_1, marker='o',label ='RX3_RF1')
-plt.title('Mean Correlation Over Time ')
+plt.plot(x_values,correlation_means_2_0_v, marker='o',label ='RX2_RF0')
+plt.plot(x_values,correlation_means_2_1_v, marker='o',label ='RX2_RF1')
+plt.plot(x_values,correlation_means_3_0_v, marker='o',label ='RX3_RF0')
+plt.plot(x_values,correlation_means_3_1_v, marker='o',label ='RX3_RF1')
+plt.title('Mean Correlation Over Time ----vertikal')
+plt.xlabel('Time in minuten')
+plt.xticks(x_values) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.legend()
+plt.grid(True)
+
+data_h = np.load('data_for_BesondereMessungen_RX2_RF0_horizontal.npy')
+num_k_h = data_h.shape[0] 
+correlation_means_2_0_h = np.load('correlation_mean_RX2_RF0_horizontal.npy')
+correlation_means_2_1_h = np.load('correlation_mean_RX2_RF1_horizontal.npy')
+correlation_means_3_0_h = np.load('correlation_mean_RX3_RF0_horizontal.npy')
+correlation_means_3_1_h = np.load('correlation_mean_RX3_RF1_horizontal.npy')
+
+# Figure 
+plt.subplots(figsize=(10, 6))
+x_values = np.arange(0, num_k_h) * 2
+plt.plot(x_values,correlation_means_2_0_h, marker='o',label ='RX2_RF0')
+plt.plot(x_values,correlation_means_2_1_h, marker='o',label ='RX2_RF1')
+plt.plot(x_values,correlation_means_3_0_h, marker='o',label ='RX3_RF0')
+plt.plot(x_values,correlation_means_3_1_h, marker='o',label ='RX3_RF1')
+plt.title('Mean Correlation Over Time ---horizontal')
 plt.xlabel('Time in minuten')
 plt.xticks(x_values) 
 plt.axhline(y=0.5, color ='purple', linestyle='--')
@@ -89,11 +109,13 @@ plt.legend()
 plt.grid(True)
 
 
-#plt.show()
-'''
+plt.show()
+
+
+
 
 ###########################################################     Correlation-Position-calculation   ###########################################################
-
+'''
 rsp_position_2_0 = np.load('rsp_position_RX2_RF0.npy')  
 rsp_position_2_1 = np.load('rsp_position_RX2_RF1.npy')  
 rsp_position_3_0 = np.load('rsp_position_RX3_RF0.npy') 
@@ -189,7 +211,7 @@ plt.axhline(y=0.5, color ='purple', linestyle='--')
 plt.grid(True)
 plt.legend()
 
-plt.show()
+plt.show()'''
 '''
 plt.subplots(figsize=(60, 10))
 x_values = np.arange(0, num_k_pos + 1) 
@@ -323,6 +345,40 @@ for ms in range(num_millisecond*num_sec):
     corr_filename = f'correlation_mean.npy'
     np.save (corr_filename,correlation_means)
 '''
+'''data = np.load('data_for_BesondereMessungen_RX2_RF0_vertikal.npy')
+num_k = data.shape[0] - 1
+correlation_means = np.zeros((num_millisecond*num_sec, num_k + 1)) # Array to hold mean correlations for each millisecond
+for ms in range(num_millisecond*num_sec):
+    correlation =[]
+    
+    for k in range(num_k+1):  
+        
+        temp_correlations = []
+        
+        
+        for i in range(data.shape[0] - k ):
+            #print (f"k:{k},i,{i}")
+           
+            corr_matrix = np.corrcoef(data[i, :], data[i + k , :])  
+
+            temp_correlations.append(corr_matrix[0][1])
+
+            
+            print(f"k:{k},i:{i},  temp cross correlation: {temp_correlations}")
+         
+        correlation.append(np.mean(temp_correlations) )
+    print(f"cross correlation mean:{correlation}")
+        
+
+    
+
+    print(f"correlation mean:{correlation}")
+    correlation_means  = np.array(correlation)
+    #correlation_means[ms] = correlations
+    
+    print(correlation_means)
+    corr_filename = f'correlation_mean_RX2_RF0_vertikal.npy'
+    np.save (corr_filename,correlation_means)'''
 '''
 position = []
 time_indices = np.arange(20000)

@@ -11,6 +11,56 @@ delta_dis = []
 all_speed = []
 i=0
 delta_x = 0
+
+
+rsp_position_4m_2_0_v = np.load('rsp_position_4m_RX2_RF0_vertikal.npy',allow_pickle=True)  
+#print(rsp_position_4m_2_0_v.shape[0])
+
+correlation_means_2_0_v = np.load('correlation_mean_position_1mm_RX2_RF0_vertikal.npy')
+correlation_means_2_0_h = np.load('correlation_mean_position_1mm_RX2_RF0_horizontal.npy')
+correlation_means_2_1_v = np.load('correlation_mean_position_1mm_RX2_RF1_vertikal.npy')
+correlation_means_2_1_h = np.load('correlation_mean_position_1mm_RX2_RF1_horizontal.npy')
+correlation_means_3_0_v = np.load('correlation_mean_position_1mm_RX3_RF0_vertikal.npy')
+correlation_means_3_0_h = np.load('correlation_mean_position_1mm_RX3_RF0_horizontal.npy')
+correlation_means_3_1_v = np.load('correlation_mean_position_1mm_RX3_RF1_vertikal.npy')
+correlation_means_3_1_h = np.load('correlation_mean_position_1mm_RX3_RF1_horizontal.npy')
+
+num_k_pos = rsp_position_4m_2_0_v.shape[0] - 1
+ 
+# Figure 
+plt.subplots(figsize=(60, 10))
+x_values = np.arange(0, num_k_pos + 1) 
+plt.plot(x_values,correlation_means_2_0_v,marker='o',label = 'RX2_RF0 at time point')
+plt.plot(x_values,correlation_means_2_1_v,marker='o',label = 'RX2_RF1 at time point')
+plt.plot(x_values,correlation_means_3_0_v,marker='o',label = 'RX3_RF0 at time point')
+plt.plot(x_values,correlation_means_3_1_v,marker='o',label = 'RX3_RF1 at time point')
+plt.title('Mean Correlation Over Position  ---  vertikal')
+plt.xlabel('Distance in mm')
+#plt.xticks(np.arange(0,max(x_values)+100,100)) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.grid(True)
+plt.legend()
+
+plt.subplots(figsize=(60, 10))
+x_values = np.arange(0, num_k_pos + 1) 
+plt.plot(x_values,correlation_means_2_0_h, marker='o',label = 'RX2_RF0 at time point')
+plt.plot(x_values,correlation_means_2_1_h, marker='o',label = 'RX2_RF1 at time point')
+plt.plot(x_values,correlation_means_3_0_h, marker='o',label = 'RX3_RF0 at time point')
+plt.plot(x_values,correlation_means_3_1_h, marker='o',label = 'RX3_RF1 at time point')
+plt.title('Mean Correlation Over Position  ---  horizontal')
+plt.xlabel('Distance in mm')
+#plt.xticks(np.arange(0,max(x_values)+100,100)) 
+plt.axhline(y=0.5, color ='purple', linestyle='--')
+plt.grid(True)
+plt.legend()
+
+plt.show()
+
+
+
+
+
+###########################################################     data-process   ###########################################################
 '''data = np.load('data_for_BesondereMessungen_RX2_RF0_vertikal.npy')
 position = np.load('position_scenario3.npy', allow_pickle=True)
 time1, x1, y1 = position[0]['Time (s)'], position[0]['X (m)'], position[0]['Y (m)']   
@@ -65,6 +115,9 @@ for time_index in range(time_indices):
 print (position)
 filename = f'position_scenario3_4m.npy'
 np.save (filename,position)'''
+
+
+###########################################################     Correlation-process   ###########################################################
 '''
 data = np.load('data_4m_RX2_RF1_horizontal.npy')
 position = np.load('position_scenario3_4m.npy',allow_pickle=True)
@@ -123,46 +176,3 @@ correlation_means = correlations
 corr_filename = f'correlation_mean_position_1mm_RX3_RF1_vertikal.npy'
 np.save (corr_filename,correlation_means)
 '''
-
-rsp_position_4m_2_0_v = np.load('rsp_position_4m_RX2_RF0_vertikal.npy',allow_pickle=True)  
-#print(rsp_position_4m_2_0_v.shape[0])
-
-correlation_means_2_0_v = np.load('correlation_mean_position_1mm_RX2_RF0_vertikal.npy')
-correlation_means_2_0_h = np.load('correlation_mean_position_1mm_RX2_RF0_horizontal.npy')
-correlation_means_2_1_v = np.load('correlation_mean_position_1mm_RX2_RF1_vertikal.npy')
-correlation_means_2_1_h = np.load('correlation_mean_position_1mm_RX2_RF1_horizontal.npy')
-correlation_means_3_0_v = np.load('correlation_mean_position_1mm_RX3_RF0_vertikal.npy')
-correlation_means_3_0_h = np.load('correlation_mean_position_1mm_RX3_RF0_horizontal.npy')
-correlation_means_3_1_v = np.load('correlation_mean_position_1mm_RX3_RF1_vertikal.npy')
-correlation_means_3_1_h = np.load('correlation_mean_position_1mm_RX3_RF1_horizontal.npy')
-
-num_k_pos = rsp_position_4m_2_0_v.shape[0] - 1
- 
-# Figure 
-plt.subplots(figsize=(60, 10))
-x_values = np.arange(0, num_k_pos + 1) 
-plt.plot(x_values,correlation_means_2_0_v,marker='o',label = 'RX2_RF0 at time point')
-plt.plot(x_values,correlation_means_2_1_v,marker='o',label = 'RX2_RF1 at time point')
-plt.plot(x_values,correlation_means_3_0_v,marker='o',label = 'RX3_RF0 at time point')
-plt.plot(x_values,correlation_means_3_1_v,marker='o',label = 'RX3_RF1 at time point')
-plt.title('Mean Correlation Over Position  ---  vertikal')
-plt.xlabel('Distance in cm')
-#plt.xticks(np.arange(0,max(x_values)+100,100)) 
-plt.axhline(y=0.5, color ='purple', linestyle='--')
-plt.grid(True)
-plt.legend()
-
-plt.subplots(figsize=(60, 10))
-x_values = np.arange(0, num_k_pos + 1) 
-plt.plot(x_values,correlation_means_2_0_h, marker='o',label = 'RX2_RF0 at time point')
-plt.plot(x_values,correlation_means_2_1_h, marker='o',label = 'RX2_RF1 at time point')
-plt.plot(x_values,correlation_means_3_0_h, marker='o',label = 'RX3_RF0 at time point')
-plt.plot(x_values,correlation_means_3_1_h, marker='o',label = 'RX3_RF1 at time point')
-plt.title('Mean Correlation Over Position  ---  horizontal')
-plt.xlabel('Distance in cm')
-#plt.xticks(np.arange(0,max(x_values)+100,100)) 
-plt.axhline(y=0.5, color ='purple', linestyle='--')
-plt.grid(True)
-plt.legend()
-
-plt.show()
